@@ -1,5 +1,5 @@
-#ifndef S21_CONTAINERS_S21_CONTAINERS_S21_VECTOR_H_
-#define S21_CONTAINERS_S21_CONTAINERS_S21_VECTOR_H_
+#ifndef S21_CONTAINERS_S21_VECTOR_H_
+#define S21_CONTAINERS_S21_VECTOR_H_
 #include <algorithm>
 #include <initializer_list>
 #include <limits>
@@ -300,4 +300,4 @@ namespace s21 {
         }
     };
 } //namespace
-#endif  // S21_CONTAINERS_S21_CONTAINERS_S21_VECTOR_H_
+#endif  // S21_CONTAINERS_S21_VECTOR_H_
