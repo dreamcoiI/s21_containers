@@ -256,6 +256,28 @@ namespace s21 {
           ++i;
         }
       }   
+      template <typename ... Args>
+      iterator emplace (const_iterator ind, Args &&...args) {
+        iterator iter = ind;
+        for(auto &&item: {std::forward<Args>(args)...}) {
+          push_back(++iter, item);
+        }  
+        return iter;
+      }
+
+      template <typename... Args>
+      void emplace_back(Args &&...args) {
+        for(auto &&item: {std::forward<Args>(args)...}) {
+          push_back(item);
+        }      
+      }
+
+      template <typename... Args>
+      void emplace_front(Args &&...args) {
+        for(auto &&item: {std::forward<Args>(args)...}) {
+          push_front(item);
+        }      
+      }
 
       void sort() {
         if (size_ > 1) {
@@ -264,6 +286,7 @@ namespace s21 {
           this->newSort_(left, right, size_);
         }
       }
+
 
     private:
       void newSort_(iterator left, iterator right, size_type listSize) {
