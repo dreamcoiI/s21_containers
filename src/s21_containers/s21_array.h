@@ -36,7 +36,7 @@ namespace s21 {
                 arr_[i]=other.arr_[i];
         }
 
-        array &operator=(const array &other) noexcept {
+        array &operator = (const array &other) noexcept {
             for(auto i = 0; i < size_;++i)
                 arr_[i] = other.arr_[i];
             return *this;
@@ -150,9 +150,9 @@ namespace s21 {
             return end()=begin();
         }
 
-//        [[nodiscard]]constexpr size_type max_size() const noexcept {
-//            return std::distance(begin(),end());
-//        }
+        [[nodiscard]]constexpr size_type max_size() const noexcept {
+            return std::distance(begin(),end());
+        }
 
     public:
         constexpr void swap(array &other) noexcept {
