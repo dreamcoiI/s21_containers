@@ -1,5 +1,5 @@
-#ifdef
-#define
+#ifdef S21_CONTAINERS_ITERATORS_S21_LIST_ITERATOR_H
+#define S21_CONTAINERS_ITERATORS_S21_LIST_ITERATOR_H
 
 #include "../s21_list.h"
 
@@ -66,4 +66,4 @@ namespace s21 {
 
 }
 
-#endif
+#endif //S21_CONTAINERS_ITERATORS_S21_LIST_ITERATOR_H

@@ -1,5 +1,5 @@
-#ifndef
-#define
+#ifndef S21_CONTAINERS_S21_LIST_H
+#define S21_CONTAINERS_S21_LIST_H
 
 #include "iterators/s21_list_iterator.h"
 
@@ -283,33 +283,62 @@ namespace s21 {
         if (size_ > 1) {
           auto left = begin_;
           auto right = --end_;
-          this->newSort_(left, right, size_);
+          this->newSort_(left, right;
         }
       }
 
 
     private:
       void newSort_(iterator left, iterator right, size_type listSize) {
-        auto middle = left;
-        if (left != right && left.node_->next_ == right) {
-          size_type newSize = listSize / 2 + listSize % 2;
-          for (size_type i = 1; i < newSize; i++) { ++middle; }
-          newSort_(left, middle, newSize);
-          newSort_(++middle, right, newSize);
+        if (last_element != this->begin() - 1 && first_element != last_element &&
+            first_element != last_element + 1) {
+          iterator iter = this->swapSort_(first_element, last_element);
+          this->newSort_(first_element, iter - 1);
+          this->newSort_(iter + 1, last_element);
         }
-        //left.sortMerge_(middle, right); //Zdes' nujen specmerge
+      }
+/*        auto middle = left;
+        if (left.node_ != right && left.node_->next_ == right.node_) {
+          if (left.node_->next_ == right.node_) {
+            if (*left > *right) {
+              T buf = *left;
+              left.node_->value_ = right.node_->value_;
+              right.node_-> value_ = buf;
+            }
+          } else {
+            size_type newSize = listSize / 2 + listSize % 2;
+            for (size_type i = 1; i < newSize; i++) { ++middle; }
+            newSort_(left, middle, newSize);
+            newSort_(++middle, right, listSize - newSize);
+            //left.sortMerge_(middle, right, listSize); //Zdes' nujen specmerge
+          }
+        }
+      }*/
+
+      iterator swapSort_(iterator first, iterator last) {
+        value_type x = *last;
+        iterator i = --first;
+        for (iterator j = first; j != last; ++j) {
+          if (*j < x) {
+            i = i + 1;
+            std::swap(*i, *j);
+          }
+        }
+        i = i + 1;
+        std::swap(*i, *last_element);
+        return i;
       }
 
-      void sortMerge_(list& middle, list& right) { //dodelat'
-        auto merged = list(size_ + other.size_);
-        auto firstIter = begin();
-        auto secondIter = other.begin();
+/*      void sortMerge_(iterator middle, iterator right, size_type listSize) { //dodelat'
+        auto merged = list(listSize);
+        auto firstIter = left;
+        auto secondIter = ++middle;
         for (auto iter = merged.begin(); iter != merged.end(); ++iter) {
-          if (firstIter == end()) {
+          if (firstIter == ++middle) {
             *iter = *secondIter;
             ++secondIter;
           } else {
-            if (secondIter == other.end()) {
+            if (secondIter == ++right) {
               *iter = *firstIter;
               ++firstIter;
             } else {
@@ -323,11 +352,14 @@ namespace s21 {
             }
           }
         }
-        *this = std::move(merged);
-      }
+        //nado ka-to sdelat' move + clear
+        //*this = std::move(merged);
+        *this = merged.begin();
+
+      }*/
 
       iterator begin_, end_;
       size_type size_;
   };
 }
-#endif
+#endif //S21_CONTAINERS_S21_LIST_H
