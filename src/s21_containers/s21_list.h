@@ -1,49 +1,46 @@
 #ifndef S21_CONTAINERS_S21_LIST_H
 #define S21_CONTAINERS_S21_LIST_H
 
+#include <cstddef>
+#include <algorithm>
+#include <utility>
+#include <initializer_list>
 #include "iterators/s21_list_iterator.h"
+#include "s21_list_node.h"
 
 namespace s21 {
-  template <typename T>
-  struct Node {
-    T value_;
-    Node* next_;
-    Node* prev_;
-    Node() : value_(), next_(nullptr), prev_(nullptr) {}
-    Node(const T& value, const Node* prev, const Node* next)
-        : value_(value), next_(next), prev_(prev) {}
-    Node(T&& value)
-        : value_(std::move(value)), next_(nullptr), prev_(nullptr) {}
-  };
 
   template <typename T>
-  class List {
+  class list {
     public:
-      friend class ListIterator<T>;
       using value_type = T;
       using reference = T&;
       using const_reference = const T&;
       using iterator = ListIterator<T>;
-      using const_iterator = const ListIterator<T>;
+      using const_iterator = typename ListIterator<T>::ConstIterator;
       using size_type = size_t;
 
-      List(): end_(new ListNode(value_type())) {}
+      list() {
+        iterator end_, begin_;
+        begin_.node_ = nullptr;
+        end_.node_ = new Node(value_type());
+      }
 
-      List(size_type n): List() {
+      list(size_type n): list() {
         for (size_type i = 0; i < n; i += 1) {
           push_back(value_type());
         }
       }
 
-      List(std::initializer_list<value_type> const &items): list() {
+      list(std::initializer_list<value_type> const &items): list() {
         for (const auto& i : items) {
           push_back(i);
         }
       }
 
-      List(const List &l): list() { operator=(l); }
+      list(const list &l): list() { operator=(l); }
 
-      List(List &&l): list() {
+      list(list &&l): list() {
         if (this != &l) {
           clear();
           size_ = l.size_;
@@ -53,40 +50,45 @@ namespace s21 {
             end_.node_->prev_->next_ = end_.node_;
           }
           l.size_ = 0;
-          l.end_.node_.prev_ = nullptr;
+          l.end_.node_->prev_ = nullptr;
         }
       }
 
-      ~List() {
+      ~list() {
         clear();
-        delete end_;
+        delete &end_;
       }
 
-      operator=(const List &l) {
+      list& operator=(const list &l) {
         if (this != &l) {
           clear();
           for (const_iterator it = l.begin(); it != l.end(); ++it) {
             push_back(*it);
           }
+/*          Node* buf = l.begin_.node_;
+          while (buf != l.end_.node_) {
+            push_back(buf->value_);
+            buf = buf->next_;
+          }*/
         }
         return *this;
       }
 
-      reference front() {
-        if (begin_ == nullptr) {
+      const_reference front() {
+        if (begin_.node_ == nullptr) {
           throw "Collection is empty";
         }
-        return &(begin_.node_->value_);
+        return (*begin_);
       }
 
-      reference back() {
-        if (begin_ == nullptr) {
+      const_reference back() {
+        if (begin_.node_ == nullptr) {
           throw "Collection is empty";
         }
-        return &(end_.node_->prev_->value_);
+        return (end_.node_->prev_->value_);
       }
 
-      iterator begin() const {
+      iterator begin() {
         if (empty()) {
           return end_;
         } else {
@@ -94,8 +96,20 @@ namespace s21 {
         }
       }
 
-      iterator end() const {
+      iterator end() {
         return end_;
+      }
+
+      const_iterator begin() const {
+        if (empty()) {
+          return const_iterator(end_.node_);
+        } else {
+          return const_iterator(begin_.node_);
+        }
+      }
+
+      const_iterator end() const {
+        return const_iterator(end_.node_);
       }
 
       bool empty() const noexcept {
@@ -107,19 +121,19 @@ namespace s21 {
       }
 
       size_type max_size() const noexcept {
-        return (std::numeric_limits<size_type>::max() / sizeof(ListNode<T>) / 2);
+        return (std::numeric_limits<size_type>::max() / sizeof(Node<T>) / 2);
       }
 
       void clear() {
         while (!empty()) {
           pop_back();
         }
-        end_.node_->prev_ == nullptr;
+        end_.node_->prev_ = nullptr;
       }
 
       iterator insert(iterator pos, const_reference value) {
         if (size_ + 1 > max_size()) throw "Maximum of container";
-        iterator res();
+        iterator res;
         if (pos == end_) {
           if (end_.node_->prev_ == nullptr) {
             begin_.node_ = new Node<value_type>(value, nullptr, end_.node_);
@@ -153,7 +167,7 @@ namespace s21 {
           } else {
             pos.node_->prev_->next_ = pos.node_->next_;
             pos.node_->next_->prev_ = pos.node_->prev_;
-            delete pos;
+            delete &pos;
           }
           size_ -= 1;
         }
@@ -239,7 +253,7 @@ namespace s21 {
           begin_ = right;
           begin_.node_->prev_ = nullptr;
           end_.node_->prev_ = left.node_;
-          left.node_->next = end_.node_;
+          left.node_->next_ = end_.node_;
         }
       }
 
@@ -283,18 +297,18 @@ namespace s21 {
         if (size_ > 1) {
           auto left = begin_;
           auto right = --end_;
-          this->newSort_(left, right;
+          this->newSort_(left, right);
         }
       }
 
 
     private:
-      void newSort_(iterator left, iterator right, size_type listSize) {
-        if (last_element != this->begin() - 1 && first_element != last_element &&
-            first_element != last_element + 1) {
-          iterator iter = this->swapSort_(first_element, last_element);
-          this->newSort_(first_element, iter - 1);
-          this->newSort_(iter + 1, last_element);
+      void newSort_(iterator left, iterator right) {
+        if (right != --this->begin() && left != right &&
+            left != ++right) {
+          iterator iter = this->swapSort_(left, right);
+          this->newSort_(left, --iter);
+          this->newSort_(++iter, right);
         }
       }
 /*        auto middle = left;
@@ -320,12 +334,12 @@ namespace s21 {
         iterator i = --first;
         for (iterator j = first; j != last; ++j) {
           if (*j < x) {
-            i = i + 1;
+            ++i;
             std::swap(*i, *j);
           }
         }
-        i = i + 1;
-        std::swap(*i, *last_element);
+        ++i;
+        std::swap(*i, *last);
         return i;
       }
 
@@ -353,7 +367,7 @@ namespace s21 {
           }
         }
         //nado ka-to sdelat' move + clear
-        //*this = std::move(merged);
+        *this = std::move(merged);
         *this = merged.begin();
 
       }*/
