@@ -96,6 +96,40 @@ namespace s21 {
                     return size_==0;
                 }
 
+                //Возвращает максимальное допустимое кол-во эл-ов в контейнере
+                //Так как gcc ограничивает объекты размером в половину адресного пространства, делим на 2
+                //Так как в дереве хранится указатель на head(голову), кол-во созданных эл-ов(size_),
+                // и компаратор (cmprt)- это все вместе получается tree_type, а так же выделяется память
+                // на один служебный узел tree_node(он есть даже у пустого дерева), мы вычитаем эти значения
+                //для получения максимальной допустимой памяти
+                // А для нахождения максимального кол-ва эл-ов мы делим полученное значение на sizeof одного узла
+
+                size_type maxSize() const noexcept {
+                    return ((std::numeric_limits<size_type>::max()/2) -
+                            sizeof (tree_type)-sizeof (tree_node))/sizeof (tree_node);
+                }
+
+                //возвращает итератор на начало контейнера
+                iterator begin_() noexcept {
+                    return iterator (MostLeft());
+                }
+
+                //конст begin
+                const_iterator begin_() const noexcept {
+                    return const_iterator (MostLeft());
+                }
+
+                //возвращает итератор на конец контейнера(после последнего эл-та)
+                iterator end_() noexcept {
+                    return iterator (head_);
+                }
+
+                //конст end
+                const_iterator end_() const noexcept {
+                    return const_iterator (head_);
+                }
+
+                
                 private:
 
                 tree_node *head_;
