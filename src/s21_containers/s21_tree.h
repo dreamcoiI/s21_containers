@@ -129,20 +129,48 @@ namespace s21 {
                     return const_iterator (head_);
                 }
 
-                
+                //итератор для вставки в контейнер элемента в контейнер, если есть уже такой ключ
+                //вставка производится по верхней границе диапазона
+                iterator InsertKey(const key_type &key) {
+                    auto *new_tmp = new tree_node{key};
+                    return InsertKey(Root(),new_tmp,0).first;
+                }
+
+                //Мерджим элементы из other в this
+                void merge_(tree_type &other) {
+                    if(this!= &other) {
+                        iterator anotherBegin = other.begin_();
+                        while (other.size_ > 0) {
+                            tree_node *mvgNode = other.begin_();
+                            ++anotherBegin;
+                            if(mvgNode->_left_!= nullptr)
+                                mvgNode->_left_->_parent_=mvgNode->_parent_;
+                            if(mvgNode->_right_ != nullptr)
+                                mvgNode->_right_->_parent_=mvgNode->_parent_;
+                            if(mvgNode->_parent_->_left_ == mvgNode)
+                                mvgNode->_parent_->_left_ = nullptr;
+                            if(mvgNode->_parent_->_right_ == mvgNode)
+                                mvgNode->_parent_->_right_ = nullptr;
+
+                            mvgNode->toDefaultNode();
+                            --other.size_;
+
+                        }
+                    }
+                }
                 private:
 
                 tree_node *head_;
 
-                tree_node *_parent_;
+                tree_node *parent_;
 
-                tree_node *_left_;
+                tree_node *left_;
 
-                tree_node *_right_;
+                tree_node *right_;
 
-                tree_node *_key_;
+                key_type *key_;
 
-                tree_node _color_;
+                tree_color color_;
 
                 Comparator cmprt;
 
@@ -184,10 +212,10 @@ namespace s21 {
                 }
 
                 const tree_node *MostRight() const {
-                    return head->_right_;
+                    return head_->_right_;
                 }
 
-                [[nodiscard]] tree_node  *copytree(const tree_node *node, tree_node *_parent_) {
+                [[nodiscard]] tree_node  *copytree(const tree_node *node, tree_node *parent_) {
                     auto *tmp = new tree_node {node->_key_, node->_color_};
                     try {
                         if(node->_left_)
@@ -199,7 +227,7 @@ namespace s21 {
                         throw;
                     }
 
-                    tmp->_parrent_ = parent;
+                    tmp->_parrent_ = parent_;
                     return tmp;
                 }
 
@@ -217,6 +245,13 @@ namespace s21 {
                     return node;
                 }
 
+                void toDefaultNode() noexcept {
+                    left_ = nullptr;
+                    right_= nullptr;
+                    parent_= nullptr;
+                    color_=tRed;
+                }
+
                 void copyFromOther(const tree_type &other) {
                     tree_node *tmp_copy_root = copytree(other.Root(), nullptr);
                     clear();
@@ -227,8 +262,154 @@ namespace s21 {
                     size_=other.size_;
                     cmprt=other.cmprt;
                 }
-            };
 
+                std::pair<iterator,bool>InsertKey(tree_node *head, tree_node *root, int uniq) {
+                    tree_node *tmp = head;
+                    tree_node *parent = nullptr;
+
+                    while (tmp != nullptr) {
+                        parent = tmp;
+                        if(cmprt(root->key,head->key_))
+                            head=head->left_;
+                        else {
+                            if(uniq == false) tmp = tmp->right_;
+                            else return {iterator(head), false};
+                        }
+                    }
+                    if(parent!= nullptr) {
+                        root->parent_=parent;
+                        if(cmprt(root->key_,parent->key)) parent->left_=root;
+                        else parent->right_=root;
+                    } else {
+                        root->color_ = tBlack;
+                        root->parent_= head_;
+                        Root()=root;
+                    }
+                    ++size_;
+                    if(MostLeft()==head_||MostLeft()->left_!= nullptr) MostLeft() = root;
+                    if(MostRight()==head_||MostRight()->right_ != nullptr) MostRight() = root;
+                    BalancingTree();
+
+                }
+
+                //Для балансировки дерева нужно знать несколько правил:
+                //1) Каждый узел промаркирован красным или чёрным цветом
+                //2) Корень и конечные узлы (листья) дерева - чёрные
+                //3) У красного узла родительский узел - черный
+                //4)Все простые пути из любого узла х до листьев содержат одинокавое количества чёрных узлов
+                //5) Чёрный узел может иметь чёрного родителя
+                // В интернете много статей где объясняется как нужно делать балансировку.
+                // Вот две из них в которых приводится алгоритм:
+                // https://fkti5301.github.io/exam_tickets_aisd_2017_kolinko/tickets/12.html
+                // https://habr.com/ru/companies/otus/articles/472040/
+                //Соответственно, для балансировки дерева нам понадобятся функции вращения
+                void BalancingTree(tree_node *node) {
+                    //Папа
+                    tree_node *father = node->parent_;
+
+                    while(node!= Root() && father->color_ == tRed) {
+                        //Дед
+                        tree_node *grandpa = father->parent_;
+                        if(grandpa->left != father) {
+                            //Ситуация когда "дядя" слева
+                            tree_node  *uncle = grandpa->left_;
+                            if(uncle != nullptr && uncle->color_ == tRed) {
+                                //если дядя и папа красные, мы меняем цвет у них, деду ставим черный
+                                father->color_ = tBlack;
+                                uncle->color_=tBlack;
+                                grandpa->color_=tRed;
+
+                                node=grandpa;
+                                father=node->parent_;
+                            } else {
+                                //если дядя черный, папа и дед в разных сторонах дерева
+                                if(father->left_==node) {
+                                    //функция поворота направо
+                                    RightRotate(father);
+                                    std::swap(father,node);
+                                }
+                                //если дядя черный, а папа и дед в одной стороне
+                                //Функция поворота налево
+                                LeftRotate(grandpa);
+                                father->color_=tBlack;
+                                grandpa->color_=tRed;
+                                break;
+                            }
+                        } else {
+                            //ситуация когда дядя справа
+                            tree_node* uncle = grandpa->right_ ;
+                            if(uncle!= nullptr && uncle->color_ == tRed) {
+                                father->color_=tBlack;
+                                uncle->color_=tBlack;
+                                grandpa->color_=tRed;
+
+                                node=grandpa;
+                                father=node->parent_;
+                            } else {
+                                //дядя черный папа и дед в разных сторонах
+                                if(father->right_==node) {
+                                    //Функция поворота налево
+                                    LeftRotate(father);
+                                    std::swap(father,node);
+                                }
+                                //дядя черный папа и дед в одной стороне
+                                //Функция поворота направо
+                                RightRotate(grandpa);
+                                grandpa->color=tRed;
+                                father->color_=tBlack;
+                                break;
+                            }
+                        }
+                    }
+                    //Корень всегда черный!
+                    Root()->color_=tBlack;
+                }
+
+                //функция поворота налево
+                void LeftRotate(tree_node *node) noexcept  {
+                    //так как поворот налево, опорный узел будет правым.
+                    tree_node *const support=node->right_;
+                    support->parent_=node->parent_;
+
+                    if(node==Root()) {
+                        //если у нас нода была корнем, то опорный узел становится корнем
+                        Root()=support;
+                    } else if(node->parent_->left_==node) {
+                        //если узел у родителя был слева, то опорным становится левый узел от родителя
+                        node->parent_->left_=support;
+                    } else {
+                        //если узел у родителя был справа, то опорным становится правый узел от родителя
+                        node->parent_->right=support;
+                    }
+
+                    node->right_=support->left_;
+                    if(support->left_ != nullptr)
+                        support->left_->parent_ = node;
+                    node->parent_ = support;
+                    support->left_=node;
+                }
+
+                //функция поворота направо (делаем все аналогично как с поворотом налево(только направо)
+                void RightRotate(tree_node *node) noexcept {
+                    //по аналогии с поворотом налево берем опорны узел(опорным будет узел слева!)
+                    tree_node *const support = node->left_;
+                    support->parent_=node->parent_;
+
+                    if(node==Root())
+                        Root()=support;
+                    else if (node->parent_->right_ == node)
+                        node->parent_->right_=support;
+                    else
+                        node->parent_->left_=support;
+
+                    node->left_=support->right;
+                    if(support->right_ != nullptr)
+                        support->right_->parent_=node;
+                    node->parent_=support;
+                    support->right_=node;
+                }
+                
+            };
 }
 
 #endif //S21_CONTAINERS_SRC_S21_CONTAINERS_S21_TREE_H
