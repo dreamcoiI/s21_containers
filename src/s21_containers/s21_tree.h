@@ -67,7 +67,7 @@ namespace s21 {
                 ~RBTree() {
                     clear();
                     delete head_;
-                    //делаем указатель чтобы избежать дальнейшие сбои
+                    //делаем указатель, чтобы избежать дальнейшие сбои
                     head_= nullptr;
                 }
                 //возвращает кол-во эл-ов в контейнере
@@ -75,9 +75,6 @@ namespace s21 {
                     return size_;
                 }
 
-                reference operator *() const noexcept{
-                    return node_->key_;
-                }
 
                 void swap(tree_type &other) noexcept {
                     std::swap(head_,other.head_);
@@ -97,7 +94,7 @@ namespace s21 {
                 }
 
                 //Возвращает максимальное допустимое кол-во эл-ов в контейнере
-                //Так как gcc ограничивает объекты размером в половину адресного пространства, делим на 2
+                //Так как gcc ограничивает объекты размером в половину адресного пространства, делим на 2,
                 //Так как в дереве хранится указатель на head(голову), кол-во созданных эл-ов(size_),
                 // и компаратор (cmprt)- это все вместе получается tree_type, а так же выделяется память
                 // на один служебный узел tree_node(он есть даже у пустого дерева), мы вычитаем эти значения
@@ -133,7 +130,7 @@ namespace s21 {
                 //вставка производится по верхней границе диапазона
                 iterator InsertKey(const key_type &key) {
                     auto *new_tmp = new tree_node{key};
-                    return InsertKey(Root(),new_tmp,0).first;
+                    return InsertKey(Root(),new_tmp,false).first;
                 }
 
                 //Мерджим элементы из other в this
@@ -263,7 +260,7 @@ namespace s21 {
                     cmprt=other.cmprt;
                 }
 
-                std::pair<iterator,bool>InsertKey(tree_node *head, tree_node *root, int uniq) {
+                std::pair<iterator,bool>InsertKey(tree_node *head, tree_node *root, bool uniq) {
                     tree_node *tmp = head;
                     tree_node *parent = nullptr;
 
@@ -288,7 +285,8 @@ namespace s21 {
                     ++size_;
                     if(MostLeft()==head_||MostLeft()->left_!= nullptr) MostLeft() = root;
                     if(MostRight()==head_||MostRight()->right_ != nullptr) MostRight() = root;
-                    BalancingTree();
+                    BalancingInsertTree();
+                    return  {iterator(root), true};
 
                 }
 
@@ -296,14 +294,14 @@ namespace s21 {
                 //1) Каждый узел промаркирован красным или чёрным цветом
                 //2) Корень и конечные узлы (листья) дерева - чёрные
                 //3) У красного узла родительский узел - черный
-                //4)Все простые пути из любого узла х до листьев содержат одинокавое количества чёрных узлов
+                //4)Все простые пути из любого узла х до листьев содержат одинаковое количества чёрных узлов
                 //5) Чёрный узел может иметь чёрного родителя
                 // В интернете много статей где объясняется как нужно делать балансировку.
                 // Вот две из них в которых приводится алгоритм:
                 // https://fkti5301.github.io/exam_tickets_aisd_2017_kolinko/tickets/12.html
                 // https://habr.com/ru/companies/otus/articles/472040/
                 //Соответственно, для балансировки дерева нам понадобятся функции вращения
-                void BalancingTree(tree_node *node) {
+                void BalancingInsertTree(tree_node *node) {
                     //Папа
                     tree_node *father = node->parent_;
 
@@ -408,7 +406,12 @@ namespace s21 {
                     node->parent_=support;
                     support->right_=node;
                 }
-                
+
+                //Нужна функция извлечения узла из дерева по передаваемой позиции
+
+                reference operator *() const noexcept{
+                    return node_->key_;
+                }
             };
 }
 
