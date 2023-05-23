@@ -312,7 +312,7 @@ namespace s21 {
                             //Ситуация когда "дядя" слева
                             tree_node  *uncle = grandpa->left_;
                             if(uncle != nullptr && uncle->color_ == tRed) {
-                                //если дядя и папа красные, мы меняем цвет у них, деду ставим черный
+                                //если дядя и папа красные, мы меняем цвет у них, деду ставим красный
                                 father->color_ = tBlack;
                                 uncle->color_=tBlack;
                                 grandpa->color_=tRed;
@@ -407,6 +407,35 @@ namespace s21 {
                     support->right_=node;
                 }
 
+
+                //можно много расписывать про извлечение узла дерева по определенной позиции,
+                //есть несколько статей, которые помогали мне при написании данной функции
+                //https://habr.com/ru/companies/otus/articles/521034/
+                //https://www.geeksforgeeks.org/deletion-in-red-black-tree/
+                //Далее будут рассмотрены случаи которые описаны в этих статьях(К(номер)-красный,Ч(номер)-черный)
+                tree_node* ExtractionNode(iterator ind) noexcept{
+                    if(ind == end_()) {
+                        return nullptr;
+                    }
+
+                    tree_node *removing_node=ind.node_;
+                    //Когда у нас либо к2 или ч2(смотреть первую ссылку)
+                    if(removing_node->left != nullptr && removing_node->right_ != nullptr) {
+                        //находим самую левый узел в правой части(мин справа)
+                        tree_node *replace = MinimumSearch(removing_node->right_);
+                        //нужна функция для свапа удаляемого и найденного узла
+                    }
+                    //Так же в первой ссылке было известно, что случай когда К1-невозможен(нарушает балансировку дерева)
+                    //Рассмотрим случай Ч1
+                    if  (removing_node->color_==tBlack&&(
+                            (removing_node->left_ != nullptr && removing_node->right_ == nullptr)||
+                            (removing_node->left_ == nullptr && removing_node->right_ != nullptr)
+                            ))
+                    {
+                        tree_node * replace;
+
+                    }
+                }
                 //Нужна функция извлечения узла из дерева по передаваемой позиции
 
                 reference operator *() const noexcept{
