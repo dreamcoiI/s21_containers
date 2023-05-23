@@ -3,10 +3,13 @@
 
 #include <cstddef>
 #include <algorithm>
+#include <limits>
 #include <utility>
 #include <initializer_list>
 #include "iterators/s21_list_iterator.h"
 #include "s21_list_node.h"
+
+#include <typeinfo>
 
 namespace s21 {
 
@@ -17,12 +20,10 @@ namespace s21 {
       using reference = T&;
       using const_reference = const T&;
       using iterator = ListIterator<T>;
-      using const_iterator = typename ListIterator<T>::ConstIterator;
+      using const_iterator = const iterator;//typename ListIterator<T>::ConstIterator;
       using size_type = size_t;
 
       list() {
-        iterator end_, begin_;
-        begin_.node_ = nullptr;
         end_.node_ = new Node(value_type());
       }
 
@@ -56,20 +57,16 @@ namespace s21 {
 
       ~list() {
         clear();
-        delete &end_;
       }
 
       list& operator=(const list &l) {
         if (this != &l) {
           clear();
-          for (const_iterator it = l.begin(); it != l.end(); ++it) {
-            push_back(*it);
-          }
-/*          Node* buf = l.begin_.node_;
+          Node<T>* buf = l.begin_.node_;
           while (buf != l.end_.node_) {
             push_back(buf->value_);
             buf = buf->next_;
-          }*/
+          }
         }
         return *this;
       }
@@ -140,7 +137,9 @@ namespace s21 {
             end_.node_->prev_ = begin_.node_;
             res = begin_;
           } else {
-            end_.node_->prev_->next_ = new Node<value_type>(value, end_.node_->prev_, end_.node_);
+            auto buf = end_.node_->prev_;
+            end_.node_->prev_ = new Node<value_type>(value, end_.node_->prev_, end_.node_);
+            buf->next_ = end_.node_->prev_;
             res = iterator(end_.node_->prev_);
           }
         } else {
@@ -161,20 +160,20 @@ namespace s21 {
       void erase(iterator pos) {
         if (size_ != 0 && pos.node_ != nullptr && pos != end_) {
           if (pos == begin_) {
-            begin_ = begin_.node_->next_;
+            begin_.node_ = begin_.node_->next_;
             delete begin_.node_->prev_;
             begin_.node_->prev_ = nullptr;
           } else {
             pos.node_->prev_->next_ = pos.node_->next_;
             pos.node_->next_->prev_ = pos.node_->prev_;
-            delete &pos;
+            delete pos.node_;
           }
           size_ -= 1;
         }
       }
 
       void push_back(const_reference value) {
-        insert(end_ ,value);
+        insert(end_, value);
       }
 
       void pop_back() {
@@ -241,21 +240,17 @@ namespace s21 {
         other.clear();
       }
 
-      void reverse() {
-        auto left = begin_;
-        auto right = iterator(end_.node_->prev_);
-        if (left != right) {
-          for (auto i = left; i != end_; ++i) {
-            auto buf = i.node_->next_;
-            i.node_->next_ = left.node_->prev_;
-            i.node_->prev_ = buf;
-          }
-          begin_ = right;
-          begin_.node_->prev_ = nullptr;
-          end_.node_->prev_ = left.node_;
-          left.node_->next_ = end_.node_;
-        }
-      }
+  void reverse() {
+    auto leftIter = begin();
+    auto rigthIter = iterator(end_.node_->prev_);
+    for (size_type i = 0; i < size_ / 2; i += 1) {
+      auto buf = *leftIter;
+      *leftIter = *rigthIter;
+      *rigthIter = buf;
+      ++leftIter;
+      --rigthIter;
+    }
+  }
 
       void unique() {
         auto i = begin();
@@ -373,7 +368,7 @@ namespace s21 {
       }*/
 
       iterator begin_, end_;
-      size_type size_;
+      size_type size_ = 0;
   };
 }
 #endif //S21_CONTAINERS_S21_LIST_H

@@ -1,5 +1,4 @@
 #include "test_header.h"
-
 namespace {
 TEST(List, Constructor_Default) {
   s21::list<int> s21_list;
@@ -11,7 +10,7 @@ TEST(List, Constructor_Default) {
 TEST(List, Constructor_Initializer_list) {
   s21::list<int> s21_list = {1, 2, 3, 4};
   std::list<int> std_list = {1, 2, 3, 4};
-  EXPECT_EQ(s21_list.front(), std_list.front());
+  EXPECT_EQ(std_list.front(), s21_list.front());
   EXPECT_EQ(s21_list.back(), std_list.back());
   EXPECT_EQ(s21_list.size(), std_list.size());
   EXPECT_EQ(s21_list.empty(), std_list.empty());

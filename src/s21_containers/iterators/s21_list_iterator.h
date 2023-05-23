@@ -27,10 +27,6 @@ namespace s21 {
         node_ = node;
       }    
 
-      ~ListIterator() {
-        delete node_;
-      }
-
       ListIterator& operator++() {
         if (node_->next_ != nullptr) { 
           node_ = node_->next_;
@@ -68,57 +64,6 @@ namespace s21 {
         return res;
       }
 
-      class ConstIterator {
-        public:
-        Node<T>* node;
-
-        ConstIterator(): ListIterator() {}
-
-        ConstIterator(Node<T> *node): ListIterator(node) {}
-
-        ConstIterator operator=(const ListIterator &other) {
-          this->node = other.node_;
-          return *this;
-        }
-
-        ConstIterator& operator++() {
-          if (node->next_ != nullptr) { 
-            node = node->next_;
-          }
-          return *this;
-        }
-
-        ConstIterator& operator--() {
-          if (node->prev_ != nullptr) { 
-            node = node->prev_;
-          }
-          return *this;
-        }
-
-        const T& operator*() const {
-          if (node == nullptr) {
-            throw std::out_of_range("node don't excist");
-          }
-          return node->value_;
-        }
-
-        bool operator!=(const ConstIterator& other) const {
-          if (this->node == nullptr || other.node == nullptr) {
-            throw std:: out_of_range("node don't excist");
-          }
-          bool res = (this->node != other.node)? true : false;
-          return res;
-        }
-
-        bool operator==(const ConstIterator& other) const {
-          if (this->node == nullptr || other.node == nullptr) {
-            throw std:: out_of_range("node don't excist");
-          }
-          bool res = (this->node == other.node)? true : false;
-          return res;
-        }
-
-      };
     private:
       Node<T>* node_;
   };
