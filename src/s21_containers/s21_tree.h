@@ -210,6 +210,27 @@ namespace s21 {
                     return iterator(res);
                 }
 
+                //аналогичная функция LowBow, только наоборот
+                iterator UppBow(const_reference key) {
+                    //начнем искать с корня
+                    tree_node *begin = Root();
+                    //Если ничего не найдем, то используется значение по-умолчанию(end)
+                    tree_node *res = end_().node_;
+                    //Идем циклом пока не дойдем до нуллптр(в пустом дереве, мы даже не зайдем в цикл)
+                    while (begin != nullptr) {
+                        if(cmprt(begin->key_,key)) {
+                            //если нашли элемент, то запоминаем его как предварительный,
+                            //если найдем новые элементы(ниже по дереву), то обновим значение
+                            res=begin;
+                            begin=begin->left_;
+                        } else {
+                            //Если узел меньше, то идем вправо(там элементы больше текущего)
+                            begin=begin->right_;
+                        }
+                    }
+                    return iterator(res);
+                }
+
                 private:
 
                 tree_node *head_;
