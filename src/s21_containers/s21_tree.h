@@ -422,8 +422,8 @@ namespace s21 {
                     //Когда у нас либо к2 или ч2(смотреть первую ссылку)
                     if(removing_node->left != nullptr && removing_node->right_ != nullptr) {
                         //находим самую левый узел в правой части(мин справа)
-                        tree_node *replace = MinimumSearch(removing_node->right_);
-                        //нужна функция для свапа удаляемого и найденного узла
+                        tree_node *tmp = MinimumSearch(removing_node->right_);
+                        //нужна функция для свапа удаляемого и временного(заменяемого) узла
                     }
                     //Так же в первой ссылке было известно, что случай когда К1-невозможен(нарушает балансировку дерева)
                     //Рассмотрим случай Ч1
@@ -432,11 +432,57 @@ namespace s21 {
                             (removing_node->left_ == nullptr && removing_node->right_ != nullptr)
                             ))
                     {
-                        tree_node * replace;
+                        tree_node * tmp;
+                        if (removing_node->left_ != nullptr)
+                            tmp=removing_node->left_;
+                        else
+                            tmp=removing_node->left_;
+                        //нужна функция для свапа удаляемого и временного(заменяемого) узла
+                    }
+                    //обработки К0 и Ч0(так как с К0 нам никаких дополнительных обработок)
+                    //Ч0 самый сложный, так как:
+                    //После удаления чёрного элемента изменяется чёрная высота поддерева и
+                    // нужно выполнить балансировку для его родительского элемента.
+                    //Всего нужно рассмотреть 6 разных случаев:
+                    //
+                    //КЧ1 и КЧ2 – родитель красный, левый ребёнок чёрный.
+                    //ЧК3 и ЧК4 – родитель чёрный, левый ребёнок красный.
+                    //ЧЧ5 и ЧЧ6 – родитель чёрный, левый ребёнок чёрный.
+                    if (removing_node->color_ == tBlack &&
+                    removing_node->left_ == nullptr && removing_node->right_ == nullptr) {
+                        //нужна отдельная функция, так как писать тут очень много, будет не читабельно
+                    }
+                    //теперь мы изымаем ноду, которую искали
+                    if(removing_node == Root())
+                        //в данном случае мы удаляем корень дерева(возможно когда единственный элемент дерева)
+                        //делаем отдельную обработку, для остальных случаев будет описано ниже
+                        initializerHead();
+                    else {
+                        //тут мы находим, где находится узел и отцепляем его от родителя
+                        if(removing_node==removing_node->parent_->left_)
+                            removing_node->parent_->left_ = nullptr;
+                        else
+                            removing_node->parent_->right_ = nullptr;
+
+                        //ищем новые максимум и минимум для узла(только в случае если мы удали предыдущие(й))
+                        if(MostRight() == removing_node)
+                            MostRight() = MaximumSearch(Root());
+                        if(MostLeft() == removing_node)
+                            MostLeft() = MinimumSearch(Root());
 
                     }
+
+                    //не забываем уменьшить размер дерева на 1 узел(так как мы удалили элемент)
+                    --size_;
+
+                    //ну и теперь приводим дерево к стандартному состоянию
+
+                    removing_node->toDefaultNode();
+                    return  removing_node;
                 }
                 //Нужна функция извлечения узла из дерева по передаваемой позиции
+
+
 
                 reference operator *() const noexcept{
                     return node_->key_;
