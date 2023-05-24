@@ -9,7 +9,6 @@
 #include "iterators/s21_list_iterator.h"
 #include "s21_list_node.h"
 
-#include <typeinfo>
 
 namespace s21 {
 
@@ -240,17 +239,17 @@ namespace s21 {
         other.clear();
       }
 
-  void reverse() {
-    auto leftIter = begin();
-    auto rigthIter = iterator(end_.node_->prev_);
-    for (size_type i = 0; i < size_ / 2; i += 1) {
-      auto buf = *leftIter;
-      *leftIter = *rigthIter;
-      *rigthIter = buf;
-      ++leftIter;
-      --rigthIter;
-    }
-  }
+      void reverse() {
+        auto leftIter = begin();
+        auto rigthIter = iterator(end_.node_->prev_);
+        for (size_type i = 0; i < size_ / 2; i += 1) {
+          auto buf = *leftIter;
+          *leftIter = *rigthIter;
+          *rigthIter = buf;
+          ++leftIter;
+          --rigthIter;
+        }
+      }
 
       void unique() {
         auto i = begin();
@@ -264,7 +263,8 @@ namespace s21 {
           }
           ++i;
         }
-      }   
+      }
+
       template <typename ... Args>
       iterator emplace (const_iterator ind, Args &&...args) {
         iterator iter = ind;
@@ -289,83 +289,36 @@ namespace s21 {
       }
 
       void sort() {
-        if (size_ > 1) {
-          auto left = begin_;
-          auto right = --end_;
-          this->newSort_(left, right);
+        iterator middle = this->GetMiddleList();
+        list<T> temp;
+        for (auto it = temp.begin(); middle != this->end();) {
+          iterator temp_it = middle;
+          temp.insert(it, *middle);
+          ++middle;
+          this->erase(temp_it);
+          ++it;
         }
+        if (this->size() != 1) {
+          this->sort();
+        }
+        if (temp.size() != 1) {
+          temp.sort();
+        }
+        this->merge(temp);
       }
-
 
     private:
-      void newSort_(iterator left, iterator right) {
-        if (right != --this->begin() && left != right &&
-            left != ++right) {
-          iterator iter = this->swapSort_(left, right);
-          this->newSort_(left, --iter);
-          this->newSort_(++iter, right);
+
+      iterator GetMiddleList() {
+        auto it_fast = this->begin();
+        auto it_slow = this->begin();
+        auto it_fake = this->end();
+        for (; it_fast != it_fake && ++it_fast != it_fake;) {
+          ++it_slow;
+          ++it_fast;
         }
+        return it_slow;
       }
-/*        auto middle = left;
-        if (left.node_ != right && left.node_->next_ == right.node_) {
-          if (left.node_->next_ == right.node_) {
-            if (*left > *right) {
-              T buf = *left;
-              left.node_->value_ = right.node_->value_;
-              right.node_-> value_ = buf;
-            }
-          } else {
-            size_type newSize = listSize / 2 + listSize % 2;
-            for (size_type i = 1; i < newSize; i++) { ++middle; }
-            newSort_(left, middle, newSize);
-            newSort_(++middle, right, listSize - newSize);
-            //left.sortMerge_(middle, right, listSize); //Zdes' nujen specmerge
-          }
-        }
-      }*/
-
-      iterator swapSort_(iterator first, iterator last) {
-        value_type x = *last;
-        iterator i = --first;
-        for (iterator j = first; j != last; ++j) {
-          if (*j < x) {
-            ++i;
-            std::swap(*i, *j);
-          }
-        }
-        ++i;
-        std::swap(*i, *last);
-        return i;
-      }
-
-/*      void sortMerge_(iterator middle, iterator right, size_type listSize) { //dodelat'
-        auto merged = list(listSize);
-        auto firstIter = left;
-        auto secondIter = ++middle;
-        for (auto iter = merged.begin(); iter != merged.end(); ++iter) {
-          if (firstIter == ++middle) {
-            *iter = *secondIter;
-            ++secondIter;
-          } else {
-            if (secondIter == ++right) {
-              *iter = *firstIter;
-              ++firstIter;
-            } else {
-              if (*firstIter < *secondIter) {
-                *iter = *firstIter;
-                ++firstIter;
-              } else {
-                *iter = *secondIter;
-                ++secondIter;
-              }
-            }
-          }
-        }
-        //nado ka-to sdelat' move + clear
-        *this = std::move(merged);
-        *this = merged.begin();
-
-      }*/
 
       iterator begin_, end_;
       size_type size_ = 0;
