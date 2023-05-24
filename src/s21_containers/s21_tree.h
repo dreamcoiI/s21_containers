@@ -423,7 +423,7 @@ namespace s21 {
                     if(removing_node->left != nullptr && removing_node->right_ != nullptr) {
                         //находим самую левый узел в правой части(мин справа)
                         tree_node *tmp = MinimumSearch(removing_node->right_);
-                        //нужна функция для свапа удаляемого и временного(заменяемого) узла
+                        SwapAndRemoveNode(removing_node,tmp);
                     }
                     //Так же в первой ссылке было известно, что случай когда К1-невозможен(нарушает балансировку дерева)
                     //Рассмотрим случай Ч1
@@ -437,9 +437,9 @@ namespace s21 {
                             tmp=removing_node->left_;
                         else
                             tmp=removing_node->left_;
-                        //нужна функция для свапа удаляемого и временного(заменяемого) узла
+                        SwapAndRemoveNode(removing_node,tmp);
                     }
-                    //обработки К0 и Ч0(так как с К0 нам никаких дополнительных обработок)
+                    //Обработки К0 и Ч0(так как с К0 нам никаких дополнительных обработок)
                     //Ч0 самый сложный, так как:
                     //После удаления чёрного элемента изменяется чёрная высота поддерева и
                     // нужно выполнить балансировку для его родительского элемента.
@@ -450,7 +450,8 @@ namespace s21 {
                     //ЧЧ5 и ЧЧ6 – родитель чёрный, левый ребёнок чёрный.
                     if (removing_node->color_ == tBlack &&
                     removing_node->left_ == nullptr && removing_node->right_ == nullptr) {
-                        //нужна отдельная функция, так как писать тут очень много, будет не читабельно
+                        //пишем отдельную функцию
+                        EraseB0(removing_node);
                     }
                     //теперь мы изымаем ноду, которую искали
                     if(removing_node == Root())
@@ -481,6 +482,137 @@ namespace s21 {
                     return  removing_node;
                 }
                 //Нужна функция извлечения узла из дерева по передаваемой позиции
+
+                //Функция извлечения и замены ноды(перестановка местами и удаление)
+                void SwapAndRemoveNode(tree_node *removing_node, tree_node *tmp) noexcept{
+                    //находим и меня ссылку на родителя у tmp на removing_node
+                    if(tmp->parent_->left_==tmp)
+                        tmp->parent_->left_=removing_node;
+                    else
+                        tmp->parent_->right_=removing_node;
+
+                    //если removing_node корень-меняем на tmp
+                    if(removing_node == Root())
+                        Root()=tmp;
+                    else {
+                        //а если не корень, то меняем ссылку на узел removing_node у его родителя
+                        if(removing_node->parent_->left_ ==removing_node)
+                            removing_node->parent_->left_ = tmp;
+                        else
+                            removing_node->parent_->right_ = tmp;
+                    }
+
+                    //свапаем все кроме key_, ключи остаются на своем месте
+                    std::swap(removing_node->parent_,tmp->parent_);
+                    std::swap(removing_node->left_,tmp->left_);
+                    std::swap(removing_node->right_,tmp->right_);
+                    std::swap(removing_node->color_,tmp->color_);
+
+                    //замена родителей у свапаемых нод
+                    if(removing_node->right_)
+                        removing_node->right_->parent_=removing_node;
+                    if(removing_node -> left_)
+                        removing_node->left_->parent_ = removing_node;
+                    if(tmp->right_)
+                        tmp->right_->parent_ = tmp;
+                    if(tmp->left_)
+                        tmp->left_->parent_ = tmp;
+                }
+
+                //отдельная функция для случая когда у нас в функции подается черная нода у которой нет детей
+                //все правила отлично описаны на https://ru.wikipedia.org/wiki/Красно-чёрное_дерево в подразделе Удаление
+                //Делалось все по алгоритм с этого сайта https://algorithmtutor.com/Data-Structures/Tree/Red-Black-Trees/
+                void EraseB0 (tree_node* removing_node) noexcept {
+                    tree_node *checked_node = removing_node;
+                    tree_node *parent = removing_node->parent_;
+
+                    //Делаем проверку в цикле
+                    while(checked_node != Root() && checked_node->color_ == tBlack) {
+                        if(checked_node ==parent->left_) {
+                            //Значит узел который мы удаляем-слева от родителя
+                            tree_node  *tmp = parent->right_;
+
+                            //Случай первый
+                            if(tmp->color_==tRed) {
+                                std::swap(parent->color_,tmp-color_);
+                                LeftRotate(parent);
+                                parent = checked_node->parent_;
+                                tmp = parent->right_;
+                            }
+
+                            //Случай второй
+                            if(tmp->color_ == tBlack &&
+                            (tmp->left_ == nullptr || tmp->left_->color_ == tBlack) &&
+                            (tmp->right_ == nullptr || tmp->right_->color_ == tBlack)) {
+                                tmp->color_ = tRed;
+                                if(parent->color_ == tRed) {
+                                    parent->color_ = tBlack;
+                                    break;
+                                }
+                                //закончили с балансировкой, но нужно теперь заниматься балансировкой родителя
+                                tmp = parent;
+                                parent = tmp->parent_;
+                            } else {
+                                //тут уже будут третий и четвертый случаи
+                                if(tmp->left_ != nullptr && tmp->left_->color_ ==tRed &&
+                                 (tmp->right_ == nullptr || tmp->right_->color_ == tBlack)) {
+                                    //собственно третий случай
+                                    std::swap(tmp->color_,tmp->left_->color_);
+                                    RightRotate(tmp);
+                                    tmp = parent->right_;
+                                }
+                                //ну и последний случай
+                                tmp->left_->color_=tBlack;
+                                tmp->color_=parent->color_;
+                                parent->color_=tBlack;
+                                RightRotate(parent);
+                                //Закончили с балансировкой
+                                break;
+                            }
+                        } else {
+                            //ну и осталось рассмотреть случай когда у нас не слева от родителя, а справа
+                            tree_node *tmp =parent->right_;
+
+                            //Первый случай
+                            if(tmp->color_ == tRed) {
+                                std::swap(tmp->color_,parent->color_);
+                                RightRotate(parent);
+                                parent = checked_node->parent_;
+                                tmp = parent->left_;
+                            }
+                            //Второй случай
+                            if(tmp->color_ == tBlack &&
+                               (tmp->left_ == nullptr || tmp->left_->color_ == tBlack) &&
+                               (tmp->right_ == nullptr || tmp->right_->color_ == tBlack)) {
+                                tmp->color_ = tRed;
+                                if (parent->color_ == tRed) {
+                                    parent->color_ = tBlack;
+                                    break;
+                                }
+                                //закончили с балансировкой, но нужно теперь заниматься балансировкой родителя
+                                tmp = parent;
+                                parent = tmp->parent_;
+                            } else {
+                                //тут уже будут третий и четвертый случаи
+                                if(tmp->right_ != nullptr && tmp->right_->color_ ==tRed &&
+                                   (tmp->left_ == nullptr || tmp->left_->color_ == tBlack)) {
+                                    //собственно третий случай
+                                    std::swap(tmp->color_,tmp->right_->color_);
+                                    LeftRotate(tmp);
+                                    tmp=tmp->left_;
+                                }
+                                //ну и последний случай
+                                tmp->left_->color_=tBlack;
+                                tmp->color_=parent->color_;
+                                parent->color_=tBlack;
+                                RightRotate(parent);
+                                //Закончили с балансировкой
+                                break;
+                            }
+                        }
+                    }
+                }
+
 
 
 
