@@ -12,14 +12,14 @@ namespace s21 {
         tBlack
     };
 
-    template <typename  key, typename Comparator = std::less<key>>
+    template <typename  Key, typename Comparator = std::less<Key>>
             class RBTree {
             private:
                 struct RedBlackNode;
                 struct RedBlackIterator;
                 struct RedBlackIteratorConst;
             public:
-                using key_type = key;
+                using key_type = Key;
                 using const_reference = const key_type &;
                 using reference = key_type &;
                 using const_iterator = const RedBlackIteratorConst;
@@ -151,10 +151,65 @@ namespace s21 {
 
                             mvgNode->toDefaultNode();
                             --other.size_;
+                            InsertKey(Root(),mvgNode,false);
+                        }
+                        other.initializerHead();
+                    }
+                }
 
+                //Извлекаем из other и вставляем в this,
+                // но если в this уже есть ключ который равен ключу в other, то ничего не извлечется
+                void UniqueMerge(tree_type &other) {
+                    if(this != &other) {
+                        iterator o_begin = other.begin_();
+                        iterator o_end = other.end_();
+
+                        while (o_begin != o_end) {
+                            iterator res = Find(o_begin.node_->key_);
+                            if(res == end_()) {
+                                iterator  tmp = o_begin;
+                                ++o_begin;
+                                tree_node *mvg_node = other.ExtractionNode(tmp);
+                                InsertKey(Root(),mvg_node, false);
+                            } else {
+                                ++o_begin;
+                            }
                         }
                     }
                 }
+
+                //функция для поиска элемента с ключом key
+                iterator Find(const_reference key) {
+                    iterator res = LowBow(key);
+                    if(res == end_() || cmprt(key,*res))
+                        //Если нижняя граница не нашлась, или нашел элемент > key
+                        return end_();
+                    //в остальных возвращаем результат работы функции LowBow
+                    return res;
+                }
+
+
+                //а данная функция нужна для поиска минимального элемента который не меньше key
+                iterator LowBow(const_reference key) {
+                    //начнем искать с корня
+                    tree_node *begin = Root();
+                    //Если ничего не найдем, то используется значение по-умолчанию(end)
+                    tree_node *res = end_().node_;
+                    //Идем циклом пока не дойдем до нуллптр(в пустом дереве, мы даже не зайдем в цикл)
+                    while (begin != nullptr) {
+                        if(!cmprt(begin->key_,key)) {
+                            //если нашли элемент, то запоминаем его как предварительный,
+                            //если найдем новые элементы(ниже по дереву), то обновим значение
+                            res=begin;
+                            begin=begin->left_;
+                        } else {
+                            //Если узел меньше, то идем вправо(там элементы больше текущего)
+                            begin=begin->right_;
+                        }
+                    }
+                    return iterator(res);
+                }
+
                 private:
 
                 tree_node *head_;
@@ -612,8 +667,6 @@ namespace s21 {
                         }
                     }
                 }
-
-
 
 
                 reference operator *() const noexcept{
