@@ -4,6 +4,7 @@
 #include <functional>
 #include "s21_vector.h"
 #include <limits>
+#include <vector>
 
 namespace s21 {
 
@@ -231,6 +232,39 @@ namespace s21 {
                     return iterator(res);
                 }
 
+                //Удаление элемента на определенной позиции
+                void Erase(iterator ind) noexcept {
+                    tree_node *res = ExtractionNode(ind);
+                    delete res;
+                }
+
+                //Проверка на корректность дерева
+                bool TreeCheck() const noexcept {
+                    //head дерева должна быть красной
+                    if(head_->color_ == tBlack)
+                        return false;
+                    //пустое дерево-это всегда хорошо
+                    if(Root() == nullptr)
+                        return true;
+
+                    //корень дерева всегда черный
+                    if(Root()->color_ != tBlack)
+                        return false;
+
+                    //У красного узла все потомки черные
+                    if(!RedCheckNode(Root()->color_))
+                        return false;
+
+                    //Любой простой путь от узла-предка до потомка содержит одинаковое кол-во черных узлов
+
+                    if(BlackHeight(Root()) == -1)
+                        return false;
+
+
+                    //Если мы дошли до этого момента-поздравляю, дерево корректно
+                    return true;
+                }
+
                 private:
 
                 tree_node *head_;
@@ -345,7 +379,7 @@ namespace s21 {
                         if(cmprt(root->key,head->key_))
                             head=head->left_;
                         else {
-                            if(uniq == false) tmp = tmp->right_;
+                            if(!uniq) tmp = tmp->right_;
                             else return {iterator(head), false};
                         }
                     }
@@ -687,6 +721,54 @@ namespace s21 {
                             }
                         }
                     }
+                }
+
+                //Рекурсивная функция. Основные принципы:
+                // 1)В КЧ дереве не может быть двух подряд идущих красных узлов
+                // 2)В КЧ дереве у красного родителя-дети черные
+                bool RedCheckNode(const tree_node *knot)const noexcept {
+                    if(knot->color_ ==tRed) {
+                        if((knot->left_ != nullptr && knot->left_->color_ == tRed)||
+                        (knot->right_ != nullptr && knot->right_->color_ == tRed))
+                            return false;
+                    }
+
+                    //Если у нашего узла есть левый потомок
+                    if(knot->left_ != nullptr) {
+                        if (!RedCheckNode(knot->left_))
+                            return false;
+                    }
+
+                    //Если у нашего узла есть правый потомок
+                    if(knot->right_ != nullptr) {
+                        if(!RedCheckNode(knot->right_))
+                            return false;
+                    }
+                    //В остальных случаях возвращаем тру
+                    return true;
+                }
+
+                //Расчитываем высоту дерева(помним про правило про просой путь)
+                //Если дерево сбалансировано-возвращаем высоту, если нет возвращает -1
+                int BlackHeight(const tree_node *knok) const noexcept {
+                    //Пустое дерево всегда сбалансировано и имеет высоту 0
+                    if(knok == nullptr)
+                        return 0;
+
+                    //Смотрим высоту (рекурсивно) для правых и левых потомков
+                    int left_height = BlackHeight(knok->left_);
+                    int right_height = BlackHeight(knok->right_);
+                    //Если дерево некорректно-возвращает -1(может быть некорректными
+                    // 1) Левое поддерево
+                    // 2) Правое поддерево
+                    // 3) Разная высота
+                    // в остальных случаях, возвращаем высоту)
+                    if(left_height != -1 && right_height != -1 && left_height == right_height ) {
+                        int add = knok->color_ ==tBlack ? 1:0;
+                        return add + left_height;
+                        //так как left_height == right_height-неважно какую высоту мы прибавляем
+                    } else
+                        return -1;
                 }
 
 
