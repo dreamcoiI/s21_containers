@@ -141,14 +141,14 @@ namespace s21 {
                         while (other.size_ > 0) {
                             tree_node *mvgNode = other.begin_();
                             ++anotherBegin;
-                            if(mvgNode->_left_!= nullptr)
-                                mvgNode->_left_->_parent_=mvgNode->_parent_;
-                            if(mvgNode->_right_ != nullptr)
-                                mvgNode->_right_->_parent_=mvgNode->_parent_;
-                            if(mvgNode->_parent_->_left_ == mvgNode)
-                                mvgNode->_parent_->_left_ = nullptr;
-                            if(mvgNode->_parent_->_right_ == mvgNode)
-                                mvgNode->_parent_->_right_ = nullptr;
+                            if(mvgNode->left_!= nullptr)
+                                mvgNode->left_->parent_=mvgNode->parent_;
+                            if(mvgNode->right_ != nullptr)
+                                mvgNode->right_->parent_=mvgNode->parent_;
+                            if(mvgNode->parent_->left_ == mvgNode)
+                                mvgNode->parent_->left_ = nullptr;
+                            if(mvgNode->parent_->right_ == mvgNode)
+                                mvgNode->parent_->right_ = nullptr;
 
                             mvgNode->toDefaultNode();
                             --other.size_;
@@ -286,8 +286,8 @@ namespace s21 {
 
                 void destroy(tree_node *node) noexcept{
                     if(node == nullptr) return;
-                    destroy(node->_left_);
-                    destroy(node->_right_);
+                    destroy(node->left_);
+                    destroy(node->right_);
                     delete node;
                 }
 
@@ -300,54 +300,54 @@ namespace s21 {
                 }
 
                 tree_node *&Root() {
-                    return head_->_parent_;
+                    return head_->parent_;
                 }
                 const tree_node *&Root() const {
-                    return head_->_parent_;
+                    return head_->parent_;
                 }
 
                 tree_node *MostLeft() {
-                    return head_->_left_;
+                    return head_->left_;
                 }
 
                 const tree_node *MostLeft() const {
-                    return head_->_left_;
+                    return head_->left_;
                 }
 
                 tree_node *MostRight() {
-                    return head_->_right_;
+                    return head_->right_;
                 }
 
                 const tree_node *MostRight() const {
-                    return head_->_right_;
+                    return head_->right_;
                 }
 
-                [[nodiscard]] tree_node  *copytree(const tree_node *node, tree_node *parent_) {
+                [[nodiscard]] tree_node  *copytree(const tree_node *node, tree_node *parent) {
                     auto *tmp = new tree_node {node->_key_, node->_color_};
                     try {
-                        if(node->_left_)
-                            tmp -> _left_ = copytree(node->_left_, tmp);
+                        if(node->left_)
+                            tmp -> left_ = copytree(node->left_, tmp);
                         if(node->_right)
-                            tmp->right = copytree(node->_left_,tmp);
+                            tmp->right = copytree(node->left_,tmp);
                     } catch (...) {
                         Destroy(tmp);
                         throw;
                     }
 
-                    tmp->_parrent_ = parent_;
+                    tmp->parent_ = parent;
                     return tmp;
                 }
 
                 tree_node *MinimumSearch(tree_node *node)const noexcept{
-                    while (node->_left_ != nullptr) {
-                        node=node->_left_;
+                    while (node->left_ != nullptr) {
+                        node=node->left_;
                     }
                     return node;
                 }
 
                 tree_node *MaximumSearch(tree_node *node)const noexcept{
-                    while (node->_right_ != nullptr) {
-                        node = node->_right_;
+                    while (node->right_ != nullptr) {
+                        node = node->right_;
                     }
                     return node;
                 }
@@ -363,7 +363,7 @@ namespace s21 {
                     tree_node *tmp_copy_root = copytree(other.Root(), nullptr);
                     clear();
                     Root()=tmp_copy_root;
-                    Root()->_parent_=head_;
+                    Root()->parent_=head_;
                     MostLeft()= MinimumSearch(Root());
                     MostRight() = MaximumSearch(Root());
                     size_=other.size_;
@@ -748,7 +748,7 @@ namespace s21 {
                     return true;
                 }
 
-                //Расчитываем высоту дерева(помним про правило про просой путь)
+                //Насчитываем высоту дерева(помним про правило про простой путь)
                 //Если дерево сбалансировано-возвращаем высоту, если нет возвращает -1
                 int BlackHeight(const tree_node *knok) const noexcept {
                     //Пустое дерево всегда сбалансировано и имеет высоту 0
