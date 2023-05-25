@@ -6,174 +6,147 @@
 #include <stdexcept>
 
 namespace s21 {
-    template <typename T, std::size_t size_>
+template <typename T, std::size_t size_>
 
-    class array {
+class array {
+ public:
+  using value_type = T;
+  using reference = T &;
+  using const_reference = const T &;
+  using iterator = T *;
+  using const_iterator = const T *;
+  using size_type = std::size_t;
 
-    public:
+ public:
+  array() noexcept = default;
 
-        using value_type = T;
-        using reference = T &;
-        using const_reference = const T &;
-        using iterator = T *;
-        using const_iterator = const T *;
-        using size_type = std::size_t;
+  explicit array(std::initializer_list<value_type> const &init) {
+    if (init.size() != size_) {
+      throw std::logic_error("size not array size");
+    }
+    for (auto i = 0; i < size_; ++i) arr_[i] = init.begin()[i];
+  }
 
-    public:
+  array(const array &other) noexcept {
+    for (auto i = 0; i < size_; ++i) arr_[i] = other.arr_[i];
+  }
 
-        array() noexcept = default;
+  array &operator=(const array &other) noexcept {
+    for (auto i = 0; i < size_; ++i) arr_[i] = other.arr_[i];
+    return *this;
+  }
 
-        explicit array(std::initializer_list<value_type> const &init) {
-            if(init.size() != size_) {
-                throw std::logic_error("size not array size");
-            }
-            for(auto i = 0; i < size_;++i)
-                arr_[i] = init.begin()[i];
-        }
+  array &operator=(array &&other) {
+    if (this != other) {
+      for (auto i = 0; i < size_; ++i) {
+        arr_[i] = std::move(other.arr_[i]);
+      }
+    }
+    return *this;
+  }
 
-        array(const array &other) noexcept {
-            for (auto i = 0; i < size_;++i)
-                arr_[i]=other.arr_[i];
-        }
+  array(array &&other) noexcept {
+    if (this != other) {
+      for (auto i = 0; i < size_; ++i) arr_[i] = std::move(other.arr_[i]);
+    }
+  }
 
-        array &operator = (const array &other) noexcept {
-            for(auto i = 0; i < size_;++i)
-                arr_[i] = other.arr_[i];
-            return *this;
-        }
+  ~array() noexcept = default;
 
-        array &operator = (array &&other) {
-            if(this != other) {
-                for(auto i = 0; i < size_; ++i) {
-                    arr_[i] = std::move(other.arr_[i]);
-                }
-            }
-            return *this;
-        }
+ public:
+  reference at(size_type ind) {
+    if (ind >= size_) {
+      throw std::out_of_range("index out of range in array");
+    }
+    return arr_[ind];
+  }
 
-        array(array &&other) noexcept {
-            if(this != other) {
-                for(auto i = 0;i < size_;++i)
-                    arr_[i] = std::move(other.arr_[i]);
-            }
-        }
+  const_reference at(size_type ind) const {
+    if (ind >= size_) {
+      throw std::out_of_range("index out of range in array");
+    }
+    return arr_[ind];
+  }
 
-        ~array() noexcept= default;
+  reference operator[](size_type ind) { return at(ind); }
 
-    public:
+  const_reference operator[](size_type ind) const { return at(ind); }
 
-        reference at(size_type ind) {
-            if(ind >= size_) {
-                throw std::out_of_range("index out of range in array");
-            }
-            return arr_[ind];
-        }
+  constexpr reference start() {
+    if (size_ == 0) {
+      throw std::logic_error("size array is null");
+    }
+    return arr_[0];
+  }
 
-        const_reference at(size_type ind) const {
-            if(ind >= size_) {
-                throw std::out_of_range("index out of range in array");
-            }
-            return arr_[ind];
-        }
+  constexpr const_reference start() const {
+    if (size_ == 0) {
+      throw std::logic_error("size array is null");
+    }
+    return arr_[0];
+  }
 
-        reference operator[](size_type ind) {
-            return at(ind);
-        }
+  constexpr reference final() {
+    if (size_ == 0) {
+      throw std::logic_error("size array is null");
+    }
+    return arr_[size_ - 1];
+  }
 
-        const_reference operator[](size_type ind) const {
-            return at(ind);
-        }
+  constexpr const_reference final() const {
+    if (size_ == 0) {
+      throw std::logic_error("size array is null");
+    }
+    return arr_[size_ - 1];
+  }
 
-        constexpr reference start() {
-            if (size_ == 0) {
-                throw std:: logic_error("size array is null");
-            }
-            return arr_[0];
-        }
+  constexpr iterator arr() noexcept { return arr_; }
 
-        constexpr const_reference start() const {
-            if (size_ == 0) {
-                throw std:: logic_error("size array is null");
-            }
-            return arr_[0];
-        }
+  constexpr const_iterator arr() const noexcept { return arr_; }
 
-        constexpr reference final() {
-            if(size_ == 0) {
-                throw std:: logic_error("size array is null");
-            }
-            return arr_[size_-1];
-        }
+  // iterators
+ public:
+  constexpr iterator begin() noexcept { return arr_; }
 
-        constexpr const_reference final() const {
-            if(size_ == 0) {
-                throw std:: logic_error("size array is null");
-            }
-            return arr_[size_-1];
-        }
+  constexpr const_iterator begin() const noexcept { return arr_; }
 
-        constexpr iterator arr() noexcept {
-            return arr_;
-        }
+  constexpr iterator end() noexcept { return arr_ + size_; }
 
-        constexpr const_iterator arr() const noexcept {
-            return arr_;
-        }
+  constexpr const_iterator end() const noexcept { return arr_ + size_; }
 
-      //iterators
-    public:
+  // Capacity
+ public:
+  [[nodiscard]] constexpr size_type size() const noexcept {
+    return std::distance(begin(), end());
+  }
 
-                constexpr iterator begin() noexcept {
-            return arr_;
-        }
+  [[nodiscard]] constexpr bool empty() const noexcept {
+    return end() = begin();
+  }
 
-        constexpr  const_iterator begin() const noexcept {
-            return arr_;
-        }
+  [[nodiscard]] constexpr size_type max_size() const noexcept {
+    return std::distance(begin(), end());
+  }
 
-        constexpr  iterator end() noexcept {
-            return arr_ +size_;
-        }
+ public:
+  constexpr void swap(array &other) noexcept {
+    for (auto start1 = begin(), start2 = other.begin(); start1 != end();
+         ++start1, ++start2) {
+      T temp = std::move(*start1);
+      *start1 = std::move(*start2);
+      *start2 = std::move(temp);
+    }
+  }
 
-        constexpr  const_iterator end() const noexcept {
-            return arr_ + size_;
-        }
+  void fill(const_reference val) {
+    for (auto *start = begin(); start != end(); ++start) {
+      *start = val;
+    }
+  }
 
-        //Capacity
-    public:
+ private:
+  value_type arr_[size_] = {};
+};
+}  // namespace s21
 
-        [[nodiscard]]constexpr size_type size() const noexcept{
-            return std::distance(begin(),end());
-        }
-
-        [[nodiscard]]constexpr bool empty() const noexcept {
-            return end()=begin();
-        }
-
-        [[nodiscard]]constexpr size_type max_size() const noexcept {
-            return std::distance(begin(),end());
-        }
-
-    public:
-        constexpr void swap(array &other) noexcept {
-            for(auto start1 = begin(), start2 =other.begin();
-                start1 != end();++start1,++start2) {
-                T temp = std::move(*start1);
-                *start1 = std::move(*start2);
-                *start2 = std::move(temp);
-            }
-        }
-
-        void fill(const_reference val) {
-            for (auto *start = begin(); start != end(); ++start) {
-                *start  = val;
-            }
-        }
-
-    private:
-        value_type arr_[size_] = {};
-
-    };
-}  //namespace s21
-
-#endif //S21_CONTAINERS_S21_ARRAY_H
+#endif  // S21_CONTAINERS_S21_ARRAY_H
