@@ -322,6 +322,10 @@ namespace s21 {
                     return head_->right_;
                 }
 
+                reference operator *() const noexcept{
+                    return node_->key_;
+                }
+
                 [[nodiscard]] tree_node  *copytree(const tree_node *node, tree_node *parent) {
                     auto *tmp = new tree_node {node->_key_, node->_color_};
                     try {
@@ -352,12 +356,7 @@ namespace s21 {
                     return node;
                 }
 
-                void toDefaultNode() noexcept {
-                    left_ = nullptr;
-                    right_= nullptr;
-                    parent_= nullptr;
-                    color_=tRed;
-                }
+
 
                 void copyFromOther(const tree_type &other) {
                     tree_node *tmp_copy_root = copytree(other.Root(), nullptr);
@@ -772,9 +771,105 @@ namespace s21 {
                 }
 
 
-                reference operator *() const noexcept{
-                    return node_->key_;
-                }
+
+
+                //создаем класс для реализации узла КЧ дерева
+                struct RedBlackNode {
+
+                    //Конструктор по-умолчанию, для создания пустого узла
+                    RedBlackNode() : parent_(nullptr),left_(this),right_(this),key_(key_type{}),
+                        color_(tRed) {
+
+                    }
+
+                    //Конструктор для создания узла со значением key
+                    RedBlackNode(const key_type &key) :
+                    parent_(nullptr),left_(this),right_(this),key_(key),color_(tRed) {
+
+                    }
+
+                    //Конструктор для создания узла со значением key используя move-семантику.
+                    // Для того чтобы понять что такое move-семантика можно прочитать данную статью:
+                    // https://tproger.ru/articles/move-semantics-and-rvalue/
+                    RedBlackNode(key_type &&key) :
+                    parent_(nullptr),left_(nullptr),right_(nullptr),key_(std::move(key)),color_(tRed) {
+
+                    }
+
+                    //Конструктор для создания узла со значением key и цветом color
+                    RedBlackNode(key_type key,tree_color color):
+                    parent_(nullptr),left_(this),right_(this),key_(key),color_(color) {
+
+                    }
+
+                    void toDefaultNode() noexcept {
+                        left_ = nullptr;
+                        right_= nullptr;
+                        parent_= nullptr;
+                        color_=tRed;
+                    }
+
+                    //Возвращает следующий за текущим узлом, узел
+                    tree_node *NodeNext() const noexcept{
+                        //так как мы не меняем текущий узел, то используем const_cast
+                        auto *node = const_cast<tree_node*> (this);
+                        if(node->color_ ==tRed && (node->parent_ == nullptr || node->parent_->parent_ == node))
+                            //Если находимся в end_(), то сдвигаемся в left(минимальное значение у нас слева).
+                            // Критерии для данного узла, что он является end_() указаны в условии:
+                            // 1) Цвет узла красный
+                            // 2) Родитель узла равен nullptr ИЛИ родитель родителя данного узла равен node
+                            node = node->left_;
+                        else if (node->right_ != nullptr){
+                            //Если мы не в end_() и правый элемент не равен nullptr - то мы идем туда
+                            node = node->right_;
+                            //Далее циклом идем по ЛЕВЫМ узлам, пока не дойдем до конца(nullptr)
+                            //Если левых ветвей нет-то самым маленьким значением является значение в котором мы сейчас
+                            while (node->left_ != nullptr)
+                                node = node->left_;
+                        } else {
+                            //в остальных случаях идем по родительским узлам, до тех пор пока правая ветвь
+                            //родителя не будет содержать узел отличный от текущего
+                            tree_node *parent=node->parent_;
+
+                            while (node == parent->right_) {
+                                node=parent;
+                                parent=parent->parent_;
+                            }
+                            //Надо добавить проверку, чтобы мы находясь в end_() не попадали в parent
+                            if(node->right_!=parent) {
+                                node = parent;
+                            }
+                        }
+                        return node;
+                    }
+
+                    //Функция для возврата предыдущего узла относительного this узла
+                    tree_node *PrevNode() const noexcept {
+                        auto *node = const_cast<tree_node *>(this);
+                        if (node->color_ == tRed && (node ->parent_== nullptr || node->parent_->parent_== node))
+                            node=node->right_;
+                        else if (node->left_ != nullptr){
+                            node=node->left_;
+                            while (node->right_ != nullptr)
+                                node=node->right_;
+                        } else {
+                            tree_node *parent = node->parent_;
+                            while (node==parent->left_) {
+                                node=parent;
+                                parent=parent->parent_;
+                            }
+                            if(node->left_ != parent)
+                                node = parent;
+                        }
+                        return node;
+                    }
+
+                    tree_node *parent_;
+                    tree_node *left_;
+                    tree_node *right_;
+                    tree_color color_;
+                    tree_type key_;
+                };
             };
 }
 
