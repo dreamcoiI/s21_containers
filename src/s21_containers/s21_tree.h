@@ -322,9 +322,7 @@ namespace s21 {
                     return head_->right_;
                 }
 
-                reference operator *() const noexcept{
-                    return node_->key_;
-                }
+
 
                 [[nodiscard]] tree_node  *copytree(const tree_node *node, tree_node *parent) {
                     auto *tmp = new tree_node {node->_key_, node->_color_};
@@ -783,7 +781,7 @@ namespace s21 {
                     }
 
                     //Конструктор для создания узла со значением key
-                    RedBlackNode(const key_type &key) :
+                    explicit RedBlackNode(const key_type &key) :
                     parent_(nullptr),left_(this),right_(this),key_(key),color_(tRed) {
 
                     }
@@ -791,7 +789,7 @@ namespace s21 {
                     //Конструктор для создания узла со значением key используя move-семантику.
                     // Для того чтобы понять что такое move-семантика можно прочитать данную статью:
                     // https://tproger.ru/articles/move-semantics-and-rvalue/
-                    RedBlackNode(key_type &&key) :
+                    explicit RedBlackNode(key_type &&key) :
                     parent_(nullptr),left_(nullptr),right_(nullptr),key_(std::move(key)),color_(tRed) {
 
                     }
@@ -870,6 +868,65 @@ namespace s21 {
                     tree_color color_;
                     tree_type key_;
                 };
+                struct RedBlackIterator {
+                    using iterator_category = std::forward_iterator_tag;
+                    using dif_type = std::ptrdiff_t;
+                    using value_type = tree_type::key_type;
+                    using pointer = value_type *;
+                    using reference = value_type &;
+
+                    //так как пустой итератор нам не нужен, дефолтный конструктор запрещен
+                    RedBlackIterator() = delete;
+
+                    //Помечаем основной конструктор explicit, так как нам не нужны неявные преобразования
+                    explicit RedBlackIterator(tree_node *node) :node_(node) {
+                        }
+
+                    //Получаем указатель на значение узла
+                    reference operator *() const noexcept{
+                        return node_->key_;
+                    }
+
+                    //префиксное обращение оператора к итератору к следующему элементу
+                    iterator &operator ++() const noexcept {
+                        node_=node_->NodeNext();
+                        return *this;
+                    }
+
+                    //постфиксное обращение оператора к итератору к следующему элементу
+                    iterator operator++(int) noexcept {
+                        iterator tmp{node_};
+                        ++(*this);
+                        return tmp;
+                    }
+
+                    //префиксное обращение оператора к итератору к предыдущему элементу
+                    iterator &operator --() const noexcept {
+                        node_=node_->PrevNode();
+                        return *this;
+                    }
+
+                    //постфиксное обращение оператора к итератору к предыдущему элементу
+
+                    iterator operator--(int) noexcept {
+                        iterator tmp{node_};
+                        --(*this);
+                        return tmp;
+                    }
+
+                    //равенство двух итераторов(они равны если указывают на один и тот же элемент)
+                    bool operator ==(const iterator &other) const noexcept {
+                        return node_=other.node_;
+                    }
+
+                    //неравенство двух итераторов(они неравны если указывают на разные элементы)
+                    bool operator !=(const iterator &other) const noexcept {
+                        return node_ != other.node_;
+                    }
+
+                    tree_node *node_;
+                };
+
             };
 }
 
