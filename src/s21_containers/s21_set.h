@@ -111,18 +111,16 @@ class set {
     return tree_->UniqueInsert();
   }
 
-    //Проверка на элемент с ключом key(true-да,false-нет)
+  //Проверка на элемент с ключом key(true-да,false-нет)
   bool contains(const key_type &key) const noexcept {
-      return tree_->Find(key) != tree_->end_();
+    return tree_->Find(key) != tree_->end_();
   }
 
-    //Размещаем новые элементы в контейнер, если такого ключа еще нет
-    template<typename... Args>
-    std::vector<std::pair<iterator,bool>>emplace(Args&&...args) {
-        return tree_->UniqEmplace(std::forward<Args>(args)...);
+  //Размещаем новые элементы в контейнер, если такого ключа еще нет
+  template <typename... Args>
+  std::vector<std::pair<iterator, bool>> emplace(Args &&...args) {
+    return tree_->UniqEmplace(std::forward<Args>(args)...);
   }
-
-
 
  private:
   tree_type *tree_;
