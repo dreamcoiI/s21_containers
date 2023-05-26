@@ -9,11 +9,11 @@
 
 namespace s21 {
 
+//цвета нашего дерева
 enum RBTreeColor { tRed, tBlack };
 
 template <typename Key, typename Comparator = std::less<Key>>
 class RBTree {
-  //цвета нашего дерева
  private:
   struct RedBlackNode;
   struct RedBlackIterator;
