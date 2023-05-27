@@ -5,6 +5,17 @@
 #include <limits>
 #include <stdexcept>
 #include <utility>
+TEST(VectorTest, Element_front) {
+  s21::vector<int> s21_v{1, 2, 3};
+  std::vector<int> std_v{1, 2, 3};
+  EXPECT_EQ(s21_v.front(), std_v.front());
+}
+
+TEST(VectorTest, Element_front_throw) {
+  s21::vector<int> s21_v;
+  std::vector<int> std_v;
+  EXPECT_ANY_THROW(s21_v.front());
+}
 
 namespace s21 {
 template <typename T>
@@ -148,6 +159,8 @@ class vector {
     }
     reallocVector(capacity);
   }
+
+
 
   constexpr size_type capacity() const noexcept { return capacity_; }
 

@@ -82,7 +82,7 @@ class RBTree {
   void swap(tree_type &other) noexcept {
     std::swap(head_, other.head_);
     std::swap(size_, other.size_);
-    std::swap(cmprt, other.cmprt);
+    std::swap(cmp_, other.cmp_);
   }
 
   //Удаляет содержимое контейнера
@@ -99,7 +99,7 @@ class RBTree {
   //Так как gcc ограничивает объекты размером в половину адресного пространства,
   //делим на 2, Так как в дереве хранится указатель на head(голову), кол-во
   //созданных эл-ов(size_),
-  // и компаратор (cmprt)- это все вместе получается tree_type, а так же
+  // и компаратор (cmp_)- это все вместе получается tree_type, а так же
   // выделяется память на один служебный узел tree_node(он есть даже у пустого
   // дерева), мы вычитаем эти значения
   //для получения максимальной допустимой памяти
@@ -229,7 +229,7 @@ class RBTree {
   //функция для поиска элемента с ключом key
   iterator Find(const_reference key) {
     iterator res = LowBow(key);
-    if (res == end_() || cmprt(key, *res))
+    if (res == end_() || cmp_(key, *res))
       //Если нижняя граница не нашлась, или нашел элемент > key
       return end_();
     //в остальных возвращаем результат работы функции LowBow
@@ -246,7 +246,7 @@ class RBTree {
     //Идем циклом пока не дойдем до нуллптр(в пустом дереве, мы даже не зайдем в
     //цикл)
     while (begin != nullptr) {
-      if (!cmprt(begin->key_, key)) {
+      if (!cmp_(begin->key_, key)) {
         //если нашли элемент, то запоминаем его как предварительный,
         //если найдем новые элементы(ниже по дереву), то обновим значение
         res = begin;
@@ -268,7 +268,7 @@ class RBTree {
     //Идем циклом пока не дойдем до нуллптр(в пустом дереве, мы даже не зайдем в
     //цикл)
     while (begin != nullptr) {
-      if (cmprt(begin->key_, key)) {
+      if (cmp_(begin->key_, key)) {
         //если нашли элемент, то запоминаем его как предварительный,
         //если найдем новые элементы(ниже по дереву), то обновим значение
         res = begin;
@@ -322,7 +322,7 @@ class RBTree {
 
   tree_color color_;
 
-  Comparator cmprt;
+  Comparator cmp_;
 
   size_type size_{};
 
@@ -343,11 +343,11 @@ class RBTree {
   tree_node *&Root() { return head_->parent_; }
   const tree_node *&Root() const { return head_->parent_; }
 
-  tree_node *MostLeft() { return head_->left_; }
+  tree_node *&MostLeft() { return head_->left_; }
 
   const tree_node *MostLeft() const { return head_->left_; }
 
-  tree_node *MostRight() { return head_->right_; }
+  tree_node *&MostRight() { return head_->right_; }
 
   const tree_node *MostRight() const { return head_->right_; }
 
@@ -387,7 +387,7 @@ class RBTree {
     MostLeft() = MinimumSearch(Root());
     MostRight() = MaximumSearch(Root());
     size_ = other.size_;
-    cmprt = other.cmprt;
+      cmp_ = other.cmp_;
   }
 
   std::pair<iterator, bool> InsertKey(tree_node *head, tree_node *root,
@@ -397,7 +397,7 @@ class RBTree {
 
     while (tmp != nullptr) {
       parent = tmp;
-      if (cmprt(root->key, head->key_))
+      if (cmp_(root->key_, head->key_))
         head = head->left_;
       else {
         if (!uniq)
@@ -408,7 +408,7 @@ class RBTree {
     }
     if (parent != nullptr) {
       root->parent_ = parent;
-      if (cmprt(root->key_, parent->key))
+      if (cmp_(root->key_, parent->key_))
         parent->left_ = root;
       else
         parent->right_ = root;
@@ -418,10 +418,11 @@ class RBTree {
       Root() = root;
     }
     ++size_;
-    if (MostLeft() == head_ || MostLeft()->left_ != nullptr) MostLeft() = root;
-    if (MostRight() == head_ || MostRight()->right_ != nullptr)
-      MostRight() = root;
-    BalancingInsertTree();
+    if (MostLeft() == head_ || MostLeft()->left_ != nullptr){ MostLeft() = root;}
+    if (MostRight() == head_ || MostRight()->right_ != nullptr) {
+        MostRight() = root;
+    }
+    BalancingInsertTree(root);
     return {iterator(root), true};
   }
 
@@ -443,7 +444,7 @@ class RBTree {
     while (node != Root() && father->color_ == tRed) {
       //Дед
       tree_node *grandpa = father->parent_;
-      if (grandpa->left != father) {
+      if (grandpa->left_ != father) {
         //Ситуация когда "дядя" слева
         tree_node *uncle = grandpa->left_;
         if (uncle != nullptr && uncle->color_ == tRed) {
@@ -488,7 +489,7 @@ class RBTree {
           //дядя черный папа и дед в одной стороне
           //Функция поворота направо
           RightRotate(grandpa);
-          grandpa->color = tRed;
+          grandpa->color_ = tRed;
           father->color_ = tBlack;
           break;
         }
@@ -514,7 +515,7 @@ class RBTree {
     } else {
       //если узел у родителя был справа, то опорным становится правый узел от
       //родителя
-      node->parent_->right = support;
+      node->parent_->right_ = support;
     }
 
     node->right_ = support->left_;
@@ -538,7 +539,7 @@ class RBTree {
     else
       node->parent_->left_ = support;
 
-    node->left_ = support->right;
+    node->left_ = support->right_;
     if (support->right_ != nullptr) support->right_->parent_ = node;
     node->parent_ = support;
     support->right_ = node;
@@ -557,7 +558,7 @@ class RBTree {
 
     tree_node *removing_node = ind.node_;
     //Когда у нас либо к2 или ч2(смотреть первую ссылку)
-    if (removing_node->left != nullptr && removing_node->right_ != nullptr) {
+    if (removing_node->left_ != nullptr && removing_node->right_ != nullptr) {
       //находим самую левый узел в правой части(мин справа)
       tree_node *tmp = MinimumSearch(removing_node->right_);
       SwapAndRemoveNode(removing_node, tmp);
@@ -668,7 +669,7 @@ class RBTree {
 
         //Случай первый
         if (tmp->color_ == tRed) {
-          std::swap(parent->color_, tmp - color_);
+          std::swap(parent->color_, tmp ->color_);
           LeftRotate(parent);
           parent = checked_node->parent_;
           tmp = parent->right_;
@@ -902,7 +903,7 @@ class RBTree {
     tree_node *left_;
     tree_node *right_;
     tree_color color_;
-    tree_type key_;
+    key_type key_;
   };
   struct RedBlackIterator {
     using iterator_category = std::forward_iterator_tag;
@@ -951,7 +952,7 @@ class RBTree {
     //равенство двух итераторов(они равны если указывают на один и тот же
     //элемент)
     bool operator==(const iterator &other) const noexcept {
-      return node_ = other.node_;
+      return node_ == other.node_;
     }
 
     //неравенство двух итераторов(они неравны если указывают на разные элементы)
