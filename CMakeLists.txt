@@ -19,4 +19,4 @@ add_executable(CPP2_s21_containers_2
         src/s21_containers/s21_queue.h
         src/s21_containers/s21_stack.h
         src/s21_containers/s21_vector.h
-        src/s21_containers.h src/s21_containers/s21_array.h src/s21_containers/s21_tree.h src/s21_containers/s21_map.h src/s21_containers/s21_set.h)
+        src/s21_containers.h src/s21_containers/s21_array.h src/s21_containers/s21_tree.h src/s21_containers/s21_map.h src/s21_containers/s21_set.h src/tests/vector_test.cc src/tests/test_main.cc src/tests/test_array.cc)

@@ -20,7 +20,7 @@ class array {
  public:
   array() noexcept = default;
 
-  explicit array(std::initializer_list<value_type> const &init) {
+  array(std::initializer_list<value_type> const &init) {
     if (init.size() != size_) {
       throw std::logic_error("size not array size");
     }
@@ -72,37 +72,37 @@ class array {
 
   const_reference operator[](size_type ind) const { return at(ind); }
 
-  constexpr reference start() {
+  constexpr reference front() {
     if (size_ == 0) {
       throw std::logic_error("size array is null");
     }
     return arr_[0];
   }
 
-  constexpr const_reference start() const {
+  constexpr const_reference front() const {
     if (size_ == 0) {
       throw std::logic_error("size array is null");
     }
     return arr_[0];
   }
 
-  constexpr reference final() {
+  constexpr reference back() {
     if (size_ == 0) {
       throw std::logic_error("size array is null");
     }
     return arr_[size_ - 1];
   }
 
-  constexpr const_reference final() const {
+  constexpr const_reference back() const {
     if (size_ == 0) {
       throw std::logic_error("size array is null");
     }
     return arr_[size_ - 1];
   }
 
-  constexpr iterator arr() noexcept { return arr_; }
+  constexpr iterator data() noexcept { return arr_; }
 
-  constexpr const_iterator arr() const noexcept { return arr_; }
+  constexpr const_iterator data() const noexcept { return arr_; }
 
   // iterators
  public:
@@ -121,7 +121,7 @@ class array {
   }
 
   [[nodiscard]] constexpr bool empty() const noexcept {
-    return end() = begin();
+    return end() == begin();
   }
 
   [[nodiscard]] constexpr size_type max_size() const noexcept {

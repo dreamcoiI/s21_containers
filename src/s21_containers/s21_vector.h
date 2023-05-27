@@ -5,17 +5,7 @@
 #include <limits>
 #include <stdexcept>
 #include <utility>
-TEST(VectorTest, Element_front) {
-  s21::vector<int> s21_v{1, 2, 3};
-  std::vector<int> std_v{1, 2, 3};
-  EXPECT_EQ(s21_v.front(), std_v.front());
-}
 
-TEST(VectorTest, Element_front_throw) {
-  s21::vector<int> s21_v;
-  std::vector<int> std_v;
-  EXPECT_ANY_THROW(s21_v.front());
-}
 
 namespace s21 {
 template <typename T>
@@ -41,7 +31,7 @@ class vector {
     }
   }
 
-  explicit vector(std::initializer_list<value_type> const &init)
+  vector(std::initializer_list<value_type> const &init)
       : size_{init.size()},
         capacity_(init.size()),
         buffer_{new value_type[capacity_]} {
@@ -110,12 +100,12 @@ class vector {
 
   constexpr const_iterator begin() const noexcept { return buffer_; }
 
-  constexpr reference start() {
+  constexpr reference front() {
     if (size_ == 0) throw std::logic_error("zero sized container used");
     return *begin();
   }
 
-  constexpr const_reference start() const {
+  constexpr const_reference front() const {
     if (size_ == 0) throw std::logic_error("zero sized container used");
     return *begin();
   }
@@ -124,12 +114,12 @@ class vector {
 
   constexpr const_iterator end() const noexcept { return buffer_ + size_; }
 
-  constexpr reference final() {
+  constexpr reference back() {
     if (size_ == 0) throw std::logic_error("Methods on a zero");
     return *std::prev(end());
   }
 
-  constexpr const_reference final() const {
+  constexpr const_reference back() const {
     if (size_ == 0) throw std::logic_error("Methods on a zero");
     return *std::prev(end());
   }
@@ -283,7 +273,7 @@ class vector {
 
   void reallocVector(size_type capacity) {
     auto temp = new value_type[capacity];
-    for (auto i = 0; i < size_; ++i) temp[i] = std::move(buffer_[i]);
+    for (size_type i = 0; i < size_; ++i) temp[i] = std::move(buffer_[i]);
     delete[] buffer_;
     buffer_ = temp;
     capacity_ = capacity;
