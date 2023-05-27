@@ -24,15 +24,15 @@ class array {
     if (init.size() != size_) {
       throw std::logic_error("size not array size");
     }
-    for (auto i = 0; i < size_; ++i) arr_[i] = init.begin()[i];
+    for (size_type i = 0; i < size_; ++i) arr_[i] = init.begin()[i];
   }
 
   array(const array &other) noexcept {
-    for (auto i = 0; i < size_; ++i) arr_[i] = other.arr_[i];
+    for (size_type i = 0; i < size_; ++i) arr_[i] = other.arr_[i];
   }
 
   array &operator=(const array &other) noexcept {
-    for (auto i = 0; i < size_; ++i) arr_[i] = other.arr_[i];
+    for (size_type i = 0; i < size_; ++i) arr_[i] = other.arr_[i];
     return *this;
   }
 
@@ -47,7 +47,7 @@ class array {
 
   array(array &&other) noexcept {
     if (this != other) {
-      for (auto i = 0; i < size_; ++i) arr_[i] = std::move(other.arr_[i]);
+      for (size_type i = 0; i < size_; ++i) arr_[i] = std::move(other.arr_[i]);
     }
   }
 

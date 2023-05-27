@@ -150,7 +150,7 @@ TEST(Array, test_all) {
 TEST(Array, test_all_const) {
     std::vector<int> v{1, 2, 3, 4, 5};
     const s21::array<std::vector<int>, 10> a{v, v, v, v, v, v, v, v, v, v};
-    
+
 
     for (auto e : a)
         ASSERT_EQ(e, v);

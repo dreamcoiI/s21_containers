@@ -10,7 +10,7 @@
 namespace s21 {
 
 //цвета нашего дерева
-enum RBTreeColor { tRed, tBlack };
+enum RBTreeColor { tBlack, tRed  };
 
 template <typename Key, typename Comparator = std::less<Key>>
 class RBTree {
@@ -22,16 +22,16 @@ class RBTree {
  public:
   //Тип элемента
   using key_type = Key;
+    //Тип указателя на элемент
+    using reference = key_type &;
   //Тип ссылки на элемент(константной)
   using const_reference = const key_type &;
-  //Тип указателя на элемент
-  using reference = key_type &;
-  //Тип размера контейнера
-  using size_type = std::size_t;
   //Внутренний класс для обычных итераторов(не константых)
   using iterator = RedBlackIterator;
   //Внутренний класс для константных итераторов
   using const_iterator = const RedBlackIteratorConst;
+    //Тип размера контейнера
+    using size_type = std::size_t;
 
   //Внутренний класс дерева
   using tree_type = RBTree;
@@ -75,6 +75,7 @@ class RBTree {
     //делаем указатель, чтобы избежать дальнейшие сбои
     head_ = nullptr;
   }
+
   //возвращает кол-во эл-ов в контейнере
   size_type _size_() const noexcept { return size_; }
 
@@ -173,7 +174,7 @@ class RBTree {
   //итератор для вставки в контейнер элемента, если есть уже такой
   //ключ вставка производится по верхней границе диапазона
   iterator InsertKey(const key_type &key) {
-    auto *new_tmp = new tree_node{key};
+    tree_node *new_tmp = new tree_node{key};
     return InsertKey(Root(), new_tmp, false).first;
   }
 
@@ -182,7 +183,7 @@ class RBTree {
   //вставить, false-нет)
   std::pair<iterator, bool> UniqueInsert(const key_type &key) {
     //создаем новый узел
-    auto *tmp = new tree_node{key};
+    tree_node *tmp = new tree_node{key};
     std::pair<iterator, bool> res = InsertKey(Root(), tmp, true);
     if (!res.second)
       //если вставить не получается, удаляем узел tmp
@@ -205,7 +206,7 @@ class RBTree {
     //используем std::forward и далее std::move чтобы избежать лишних
     //копирований
     for (auto i : {std::forward<Args>(args)...}) {
-      auto *tmp = new tree_node(std::move(i));
+      tree_node *tmp = new tree_node(std::move(i));
       std::pair<iterator, bool> res_ins = InsertKey(Root(), tmp, false);
       res.push_back(res_ins);
     }
@@ -218,7 +219,7 @@ class RBTree {
     std::vector<std::pair<iterator, bool>> res;
     res.reserve(sizeof...(args));
     for (auto i : {std::forward<Args>(args)...}) {
-      auto *tmp = new tree_node(std::move(i));
+      tree_node *tmp = new tree_node(std::move(i));
       std::pair<iterator, bool> res_ins = InsertKey(Root(), tmp, false);
       if (res_ins.second == false) delete tmp;
       res.push_back(res_ins);
@@ -310,22 +311,7 @@ class RBTree {
   }
 
  private:
-  tree_node *head_;
-
-  tree_node *parent_;
-
-  tree_node *left_;
-
-  tree_node *right_;
-
-  key_type *key_;
-
-  tree_color color_;
-
-  Comparator cmp_;
-
-  size_type size_{};
-
+    //Рекурсивно удаляет все узлы и освобождает память(кроме узла head_)
   void destroy(tree_node *node) noexcept {
     if (node == nullptr) return;
     destroy(node->left_);
@@ -340,7 +326,10 @@ class RBTree {
     MostRight() = head_;
   }
 
+  //Возвращает ссылку на корень дерева
   tree_node *&Root() { return head_->parent_; }
+
+  //const версия Root()
   const tree_node *&Root() const { return head_->parent_; }
 
   tree_node *&MostLeft() { return head_->left_; }
@@ -352,7 +341,7 @@ class RBTree {
   const tree_node *MostRight() const { return head_->right_; }
 
   [[nodiscard]] tree_node *copytree(const tree_node *node, tree_node *parent) {
-    auto *tmp = new tree_node{node->_key_, node->_color_};
+    tree_node *tmp = new tree_node{node->_key_, node->_color_};
     try {
       if (node->left_) tmp->left_ = copytree(node->left_, tmp);
       if (node->_right) tmp->right = copytree(node->left_, tmp);
@@ -387,7 +376,7 @@ class RBTree {
     MostLeft() = MinimumSearch(Root());
     MostRight() = MaximumSearch(Root());
     size_ = other.size_;
-      cmp_ = other.cmp_;
+    cmp_ = other.cmp_;
   }
 
   std::pair<iterator, bool> InsertKey(tree_node *head, tree_node *root,
@@ -397,13 +386,19 @@ class RBTree {
 
     while (tmp != nullptr) {
       parent = tmp;
-      if (cmp_(root->key_, head->key_))
-        head = head->left_;
+      if (cmp_(root->key_, tmp->key_))
+        tmp = tmp->left_;
       else {
         if (!uniq)
           tmp = tmp->right_;
-        else
-          return {iterator(head), false};
+        else {
+            //Если вставка не разрешена(не уникальных элементов), то узнаем tmp>root или tmp ==root
+            if(cmp_(tmp->key_,root->key_))
+                tmp=tmp->right_;
+            else
+                return {iterator(tmp), false};
+        }
+            //РАЗОБРАТЬСЯ ПОЧЕМУ ТУТ УЛЕТАЕТ В БЕСКОНЕЧНЫЙ ЦИКЛ
       }
     }
     if (parent != nullptr) {
@@ -418,13 +413,17 @@ class RBTree {
       Root() = root;
     }
     ++size_;
-    if (MostLeft() == head_ || MostLeft()->left_ != nullptr){ MostLeft() = root;}
+    if (MostLeft() == head_ || MostLeft()->left_ != nullptr) {
+      MostLeft() = root;
+    }
     if (MostRight() == head_ || MostRight()->right_ != nullptr) {
-        MostRight() = root;
+      MostRight() = root;
     }
     BalancingInsertTree(root);
     return {iterator(root), true};
   }
+
+
 
   //Для балансировки дерева нужно знать несколько правил:
   // 1) Каждый узел промаркирован красным или чёрным цветом
@@ -669,7 +668,7 @@ class RBTree {
 
         //Случай первый
         if (tmp->color_ == tRed) {
-          std::swap(parent->color_, tmp ->color_);
+          std::swap(parent->color_, tmp->color_);
           LeftRotate(parent);
           parent = checked_node->parent_;
           tmp = parent->right_;
@@ -808,7 +807,7 @@ class RBTree {
           color_(tRed) {}
 
     //Конструктор для создания узла со значением key
-    explicit RedBlackNode(const key_type &key)
+    RedBlackNode(const key_type &key)
         : parent_(nullptr),
           left_(this),
           right_(this),
@@ -818,7 +817,7 @@ class RBTree {
     //Конструктор для создания узла со значением key используя move-семантику.
     // Для того чтобы понять что такое move-семантика можно прочитать данную
     // статью: https://tproger.ru/articles/move-semantics-and-rvalue/
-    explicit RedBlackNode(key_type &&key)
+    RedBlackNode(key_type &&key)
         : parent_(nullptr),
           left_(nullptr),
           right_(nullptr),
@@ -843,7 +842,7 @@ class RBTree {
     //Возвращает следующий за текущим узлом, узел
     tree_node *NodeNext() const noexcept {
       //так как мы не меняем текущий узел, то используем const_cast
-      auto *node = const_cast<tree_node *>(this);
+      tree_node *node = const_cast<tree_node *>(this);
       if (node->color_ == tRed &&
           (node->parent_ == nullptr || node->parent_->parent_ == node))
         //Если находимся в end_(), то сдвигаемся в left(минимальное значение у
@@ -881,7 +880,7 @@ class RBTree {
 
     //Функция для возврата предыдущего узла относительного this узла
     tree_node *PrevNode() const noexcept {
-      auto *node = const_cast<tree_node *>(this);
+      tree_node *node = const_cast<tree_node *>(this);
       if (node->color_ == tRed &&
           (node->parent_ == nullptr || node->parent_->parent_ == node))
         node = node->right_;
@@ -902,8 +901,8 @@ class RBTree {
     tree_node *parent_;
     tree_node *left_;
     tree_node *right_;
-    tree_color color_;
     key_type key_;
+    tree_color color_;
   };
   struct RedBlackIterator {
     using iterator_category = std::forward_iterator_tag;
@@ -1020,6 +1019,9 @@ class RBTree {
 
     const tree_node *node_;
   };
+  tree_node *head_;
+  size_type size_;
+  Comparator cmp_;
 };
 }  // namespace s21
 

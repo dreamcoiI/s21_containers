@@ -6,7 +6,6 @@
 #include <stdexcept>
 #include <utility>
 
-
 namespace s21 {
 template <typename T>
 class vector {
@@ -149,8 +148,6 @@ class vector {
     }
     reallocVector(capacity);
   }
-
-
 
   constexpr size_type capacity() const noexcept { return capacity_; }
 

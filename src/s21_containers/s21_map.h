@@ -19,8 +19,6 @@ class map {
   using reference = value_type &;
   //Константная ссылка на элемент
   using const_reference = const value_type &;
-  //Тип для размера контейнера
-  using size_type = std::size_t;
 
   //Компаратор, для словаря: Элементы считаются равными если значение их ключей
   //равны
@@ -36,6 +34,9 @@ class map {
   using iterator = typename tree_type::iterator;
   // 3)константный итератор
   using const_iterator = typename tree_type::const_iterator;
+
+  //Тип для размера контейнера
+  using size_type = std::size_t;
 
   //конструктор создания(по-умолчанию)
   map() : tree_(new tree_type{}) {}
@@ -131,7 +132,7 @@ class map {
   void merge(map &other) noexcept { tree_->UniqueMerge(*other->tree_); }
 
   //Проверка на элемент с ключом key(true-да,false-нет)
-  bool containts(const key_type &key) const noexcept {
+  bool contains(const key_type &key) const noexcept {
     value_type search_pair(key, mapped_type{});
     iterator search_it = tree_->Find(search_pair);
     return search_it != end();
