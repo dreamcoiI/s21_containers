@@ -573,7 +573,7 @@ class RBTree {
       if (removing_node->left_ != nullptr)
         tmp = removing_node->left_;
       else
-        tmp = removing_node->left_;
+        tmp = removing_node->right_;
       SwapAndRemoveNode(removing_node, tmp);
     }
     //Обработки К0 и Ч0(так как с К0 нам никаких дополнительных обработок)
@@ -697,7 +697,7 @@ class RBTree {
             tmp = parent->right_;
           }
           //ну и последний случай
-          tmp->left_->color_ = tBlack;
+          tmp->right_->color_ = tBlack;
           tmp->color_ = parent->color_;
           parent->color_ = tBlack;
           RightRotate(parent);
@@ -809,8 +809,8 @@ class RBTree {
     //Конструктор для создания узла со значением key
     RedBlackNode(const key_type &key)
         : parent_(nullptr),
-          left_(this),
-          right_(this),
+          left_(nullptr),
+          right_(nullptr),
           key_(key),
           color_(tRed) {}
 

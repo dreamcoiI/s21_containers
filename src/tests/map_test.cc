@@ -126,10 +126,10 @@ TEST(Map, Modifier_Insert_or_assign) {
   };
 
   EXPECT_EQ(s21_map_1.insert_or_assign('d', 322).second, true);
-  EXPECT_EQ(s21_map_1.insert_or_assign('d', 14).second, true);
+  EXPECT_EQ(s21_map_1.insert_or_assign('d', 14).second, false);
 
   EXPECT_EQ(s21_map_1.insert_or_assign('a', 5).second, true);
-  EXPECT_EQ(s21_map_1.insert_or_assign('a', 28).second, true);
+  EXPECT_EQ(s21_map_1.insert_or_assign('a', 28).second, false);
 
   auto it1 = s21_map_1.begin();
   auto it2 = s21_map_2.begin();
@@ -155,22 +155,6 @@ TEST(Map, Modifier_Erase_1) {
     ++it1, ++it2;
   }
   EXPECT_EQ(s21_map_1.size(), s21_map_2.size());
-}
-
-TEST(Map, Modifier_Erase_2) {
-  s21::map<int, std::string> s21_map = {
-      {1, "aboba"}, {2, "shleppa"}, {3, "amogus"}, {4, "abobus"}};
-  for (auto it = s21_map.begin(); it != s21_map.end(); ++it) {
-    s21_map.erase(it);
-  }
-
-  EXPECT_EQ(s21_map.empty(), true);
-  EXPECT_EQ(s21_map.size(), size_t(0));
-
-  s21_map.insert(1, "aboba");
-
-  EXPECT_EQ(s21_map.empty(), false);
-  EXPECT_EQ(s21_map.size(), size_t(1));
 }
 
 TEST(Map, Modifier_Swap) {

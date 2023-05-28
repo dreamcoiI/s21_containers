@@ -2,7 +2,7 @@ CC= g++
 CFLAGS= -Wall -Wextra -Werror
 STANDART= -std=c++17
 TESTFLAGS=-lgtest
-TESTFILES= tests/test_array.cc tests/vector_test.cc tests/test_main.cc
+TESTFILES= tests/test_array.cc tests/vector_test.cc tests/test_main.cc tests/map_test.cc
 
 all: gcov_report
 
