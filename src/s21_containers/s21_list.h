@@ -297,23 +297,7 @@ namespace s21 {
           this->newSort_(iter + 1, last_element);
         }
       }
-/*        auto middle = left;
-        if (left.node_ != right && left.node_->next_ == right.node_) {
-          if (left.node_->next_ == right.node_) {
-            if (*left > *right) {
-              T buf = *left;
-              left.node_->value_ = right.node_->value_;
-              right.node_-> value_ = buf;
-            }
-          } else {
-            size_type newSize = listSize / 2 + listSize % 2;
-            for (size_type i = 1; i < newSize; i++) { ++middle; }
-            newSort_(left, middle, newSize);
-            newSort_(++middle, right, listSize - newSize);
-            //left.sortMerge_(middle, right, listSize); //Zdes' nujen specmerge
-          }
-        }
-      }*/
+
 
       iterator swapSort_(iterator first, iterator last) {
         value_type x = *last;
@@ -328,35 +312,6 @@ namespace s21 {
         std::swap(*i, *last_element);
         return i;
       }
-
-/*      void sortMerge_(iterator middle, iterator right, size_type listSize) { //dodelat'
-        auto merged = list(listSize);
-        auto firstIter = left;
-        auto secondIter = ++middle;
-        for (auto iter = merged.begin(); iter != merged.end(); ++iter) {
-          if (firstIter == ++middle) {
-            *iter = *secondIter;
-            ++secondIter;
-          } else {
-            if (secondIter == ++right) {
-              *iter = *firstIter;
-              ++firstIter;
-            } else {
-              if (*firstIter < *secondIter) {
-                *iter = *firstIter;
-                ++firstIter;
-              } else {
-                *iter = *secondIter;
-                ++secondIter;
-              }
-            }
-          }
-        }
-        //nado ka-to sdelat' move + clear
-        //*this = std::move(merged);
-        *this = merged.begin();
-
-      }*/
 
       iterator begin_, end_;
       size_type size_;
