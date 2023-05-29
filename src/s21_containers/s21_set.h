@@ -100,15 +100,15 @@ class set {
   void erase(iterator pos) noexcept { tree_->Erase(pos); }
 
   //Обменивает содержимое контейнера с other
-  void swap(set &other) noexcept { tree_->swap(other.tree_); }
+  void swap(set &other) noexcept { tree_->swap(*other.tree_); }
 
   //Вытаскиваем из other вставляем в контейнер. Если такой элемент есть-вставка
   //не происходит
-  void merge(set &other) noexcept { tree_->UniqueMerge(&other->tree_); }
+  void merge(set &other) noexcept { tree_->UniqueMerge(*other.tree_); }
 
   //Вставка элемента в контейнер, если такого ключа в контейнере нет
   std::pair<iterator, bool> insert(const value_type &value) {
-    return tree_->UniqueInsert();
+    return tree_->UniqueInsert(value);
   }
 
   //Проверка на элемент с ключом key(true-да,false-нет)

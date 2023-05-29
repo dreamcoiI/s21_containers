@@ -2,7 +2,7 @@ CC= g++
 CFLAGS= -Wall -Wextra -Werror
 STANDART= -std=c++17
 TESTFLAGS=-lgtest
-TESTFILES= tests/test_array.cc tests/vector_test.cc tests/test_main.cc tests/map_test.cc
+TESTFILES= tests/*.cc
 
 all: gcov_report
 
@@ -11,7 +11,7 @@ test: clean
 	./test
 
 gcov_report: clean
-	$(CC) --coverage $(STANDART) $(TESTFILES) -o test $(TESTFLAGS)
+	$(CC) $(CFLAGS) --coverage $(STANDART) $(TESTFILES) -o test $(TESTFLAGS)
 	./test
 	lcov -t "test" -o test.info -c -d . --no-external
 	genhtml -o report test.info
