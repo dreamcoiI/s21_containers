@@ -15,22 +15,6 @@ TEST(Set, Constructor_Initializer_list) {
   EXPECT_EQ(s21_set.empty(), std_set.empty());
 }
 
-//TEST(Set, Constructor_Copy) {
-//  s21::set<char> s21_set_1 = {'a', 'b', 'c', 'd', 'a', 'b', 'f'};
-//  std::set<char> std_set_1 = {'a', 'b', 'c', 'd', 'a', 'b', 'f'};
-//  s21::set<char> s21_set_2 = s21_set_1;
-//  std::set<char> std_set_2 = std_set_1;
-//
-//  EXPECT_EQ(s21_set_1.size(), s21_set_2.size());
-//  EXPECT_EQ(std_set_1.size(), std_set_2.size());
-//  auto it1 = s21_set_1.begin();
-//  auto it2 = s21_set_2.begin();
-//  while (it1 != s21_set_1.end()) {
-//    EXPECT_EQ(*it1, *it2);
-//    ++it1, ++it2;
-//  }
-//}
-
 TEST(Set, Constructor_Move) {
   s21::set<char> s21_set_1 = {'a', 'b', 'c', 'd'};
   std::set<char> std_set_1 = {'a', 'b', 'c', 'd'};

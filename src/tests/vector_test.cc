@@ -39,7 +39,6 @@ TEST(Vector, Constructor_Copy) {
   }
 }
 
-
 TEST(Vector, Modifier_Insert) {
   s21::vector<int> s21_vector_1 = {'a', 'c', 'd'};
   s21::vector<int> s21_vector_2 = {'a', 'b', 'c', 'd'};

@@ -17,7 +17,6 @@ TEST(Map, Constructor_Initializer_list) {
   EXPECT_EQ(s21_map.empty(), std_map.empty());
 }
 
-
 TEST(Map, Modifier_Insert) {
   s21::map<char, int> s21_map_1 = {{'b', 228}, {'c', 1337}};
   s21::map<char, int> s21_map_2 = {
@@ -184,39 +183,39 @@ TEST(Map, Modifier_Swap) {
   EXPECT_EQ(s21_map_2.size(), s21_map_3.size());
 }
 
-//TEST(Map, Modifier_Mem_Merge) {
-//  s21::map<int, std::string> s21_map_1 = {
-//      {1, "diksi"}, {2, "podval so zmeyami"}, {3, "introvskie klouny"}};
-//  s21::map<int, std::string> s21_map_2 = {
-//      {3, "introvskie klouny"}, {4, "sbebr platforma"}, {5, "avito"}};
-//  s21::map<int, std::string> s21_map_3 = {{1, "diksi"},
-//                                          {2, "podval so zmeyami"},
-//                                          {3, "introvskie klouny"},
-//                                          {4, "sbebr platforma"},
-//                                          {5, "avito"}};
-//  s21_map_1.merge(s21_map_2);
-//  auto it1 = s21_map_1.begin();
-//  auto it3 = s21_map_3.begin();
-//  while (it1 != s21_map_1.end()) {
-//    EXPECT_EQ(*it1, *it3);
-//    ++it1, ++it3;
-//  }
-//  EXPECT_EQ(s21_map_1.size(), s21_map_3.size());
-//}
+// TEST(Map, Modifier_Mem_Merge) {
+//   s21::map<int, std::string> s21_map_1 = {
+//       {1, "diksi"}, {2, "podval so zmeyami"}, {3, "introvskie klouny"}};
+//   s21::map<int, std::string> s21_map_2 = {
+//       {3, "introvskie klouny"}, {4, "sbebr platforma"}, {5, "avito"}};
+//   s21::map<int, std::string> s21_map_3 = {{1, "diksi"},
+//                                           {2, "podval so zmeyami"},
+//                                           {3, "introvskie klouny"},
+//                                           {4, "sbebr platforma"},
+//                                           {5, "avito"}};
+//   s21_map_1.merge(s21_map_2);
+//   auto it1 = s21_map_1.begin();
+//   auto it3 = s21_map_3.begin();
+//   while (it1 != s21_map_1.end()) {
+//     EXPECT_EQ(*it1, *it3);
+//     ++it1, ++it3;
+//   }
+//   EXPECT_EQ(s21_map_1.size(), s21_map_3.size());
+// }
 
-//TEST(Map, Lookup_Contains) {
-//  s21::map<int, std::string> s21_map;
-//  s21_map.insert(1, "salamandry");
-//  s21_map.insert(2, "medoedy");
-//  s21_map.insert(3, "kapibary");
-//  s21_map.insert(4, "alpaki");
-//  EXPECT_EQ(s21_map.contains(1), true);
-//  EXPECT_EQ(s21_map.contains(2), true);
-//  EXPECT_EQ(s21_map.contains(3), true);
-//  EXPECT_EQ(s21_map.contains(4), true);
-//  EXPECT_EQ(s21_map.contains(7), false);
-//  EXPECT_EQ(s21_map.contains(-2), false);
-//  EXPECT_EQ(s21_map.contains(0), false);
-//}
+// TEST(Map, Lookup_Contains) {
+//   s21::map<int, std::string> s21_map;
+//   s21_map.insert(1, "salamandry");
+//   s21_map.insert(2, "medoedy");
+//   s21_map.insert(3, "kapibary");
+//   s21_map.insert(4, "alpaki");
+//   EXPECT_EQ(s21_map.contains(1), true);
+//   EXPECT_EQ(s21_map.contains(2), true);
+//   EXPECT_EQ(s21_map.contains(3), true);
+//   EXPECT_EQ(s21_map.contains(4), true);
+//   EXPECT_EQ(s21_map.contains(7), false);
+//   EXPECT_EQ(s21_map.contains(-2), false);
+//   EXPECT_EQ(s21_map.contains(0), false);
+// }
 
 }  // namespace

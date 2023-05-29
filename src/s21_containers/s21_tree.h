@@ -10,7 +10,7 @@
 namespace s21 {
 
 //цвета нашего дерева
-enum RBTreeColor { tBlack, tRed  };
+enum RBTreeColor { tBlack, tRed };
 
 template <typename Key, typename Comparator = std::less<Key>>
 class RBTree {
@@ -22,16 +22,16 @@ class RBTree {
  public:
   //Тип элемента
   using key_type = Key;
-    //Тип указателя на элемент
-    using reference = key_type &;
+  //Тип указателя на элемент
+  using reference = key_type &;
   //Тип ссылки на элемент(константной)
   using const_reference = const key_type &;
   //Внутренний класс для обычных итераторов(не константых)
   using iterator = RedBlackIterator;
   //Внутренний класс для константных итераторов
   using const_iterator = const RedBlackIteratorConst;
-    //Тип размера контейнера
-    using size_type = std::size_t;
+  //Тип размера контейнера
+  using size_type = std::size_t;
 
   //Внутренний класс дерева
   using tree_type = RBTree;
@@ -311,7 +311,7 @@ class RBTree {
   }
 
  private:
-    //Рекурсивно удаляет все узлы и освобождает память(кроме узла head_)
+  //Рекурсивно удаляет все узлы и освобождает память(кроме узла head_)
   void destroy(tree_node *node) noexcept {
     if (node == nullptr) return;
     destroy(node->left_);
@@ -329,7 +329,7 @@ class RBTree {
   //Возвращает ссылку на корень дерева
   tree_node *&Root() { return head_->parent_; }
 
-  //const версия Root()
+  // const версия Root()
   const tree_node *&Root() const { return head_->parent_; }
 
   tree_node *&MostLeft() { return head_->left_; }
@@ -392,13 +392,14 @@ class RBTree {
         if (!uniq)
           tmp = tmp->right_;
         else {
-            //Если вставка не разрешена(не уникальных элементов), то узнаем tmp>root или tmp ==root
-            if(cmp_(tmp->key_,root->key_))
-                tmp=tmp->right_;
-            else
-                return {iterator(tmp), false};
+          //Если вставка не разрешена(не уникальных элементов), то узнаем
+          // tmp>root или tmp ==root
+          if (cmp_(tmp->key_, root->key_))
+            tmp = tmp->right_;
+          else
+            return {iterator(tmp), false};
         }
-            //РАЗОБРАТЬСЯ ПОЧЕМУ ТУТ УЛЕТАЕТ В БЕСКОНЕЧНЫЙ ЦИКЛ
+        //РАЗОБРАТЬСЯ ПОЧЕМУ ТУТ УЛЕТАЕТ В БЕСКОНЕЧНЫЙ ЦИКЛ
       }
     }
     if (parent != nullptr) {
@@ -422,8 +423,6 @@ class RBTree {
     BalancingInsertTree(root);
     return {iterator(root), true};
   }
-
-
 
   //Для балансировки дерева нужно знать несколько правил:
   // 1) Каждый узел промаркирован красным или чёрным цветом
