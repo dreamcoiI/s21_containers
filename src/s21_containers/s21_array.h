@@ -1,5 +1,5 @@
-#ifndef S21_CONTAINERS_S21_ARRAY_H
-#define S21_CONTAINERS_S21_ARRAY_H
+#ifndef S21_CONTAINERSPLUS_S21_ARRAY_H
+#define S21_CONTAINERSPLUS_S21_ARRAY_H
 
 #include <algorithm>
 #include <initializer_list>
@@ -149,4 +149,4 @@ class array {
 };
 }  // namespace s21
 
-#endif  // S21_CONTAINERS_S21_ARRAY_H
+#endif  // S21_CONTAINERSPLUS_S21_ARRAY_H

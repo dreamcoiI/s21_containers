@@ -26,7 +26,7 @@ namespace s21 {
         using const_iterator = typename tree_type::const_iterator;
 
         //конструктор по умолчанию, создает пустое множество
-        multiset() : tree_(new tree_type{}){}
+        multiset() : tree_(new tree_type{}){ }
 
         //конструктор создания множества(инициализация с помощью
         // std::initializer_list)
@@ -49,7 +49,7 @@ namespace s21 {
         multiset(multiset &&m) noexcept : tree_(new tree_type(std::move(*m.tree_))) {}
 
         //оператор присваивания переносом
-        multiset() &operator=(multiset() &&m) noexcept {
+        multiset &operator=(multiset &&m) noexcept {
             *tree_ = std::move(*m.tree_);
             return *this;
         }
@@ -72,6 +72,49 @@ namespace s21 {
 
         // const версия для end()
         const_iterator end() const noexcept { return tree_->end_(); }
+
+
+        //Находит элемент с ключом эквивалентный ключу key
+        iterator find(const key_type &key) noexcept { return tree_->Find(key); }
+
+        // const версия для find()
+        const_iterator find(const key_type &key) const noexcept {
+            return tree_->Find(key);
+        }
+
+        //Возвращает кол-во элементов контейнера
+        size_type size() const noexcept { return tree_->_size_(); }
+
+        //Возвращает true если контейнер пустой, false если нет
+        bool empty() const noexcept { return tree_->isEmpty(); }
+
+
+        //Возвращает максимально допустимое кол-во элементов в контейнере
+        size_type max_size() const noexcept { return tree_->maxSize(); }
+
+        //очистка содержимого контейнера
+        void clear() noexcept { tree_->clear(); }
+
+        //удаляет элемент по передаваемой позиции ind
+        void erase(iterator pos) noexcept { tree_->Erase(pos); }
+
+        //Обменивает содержимое контейнера с other
+        void swap(multiset &other) noexcept { tree_->swap(*other.tree_); }
+
+        //Вытаскиваем из other вставляем в контейнер. Если такой элемент есть-вставка
+        //не происходит
+        void merge(multiset &other) noexcept { tree_->Merge_(*other.tree_); }
+
+        //Проверка на элемент с ключом key(true-да,false-нет)
+        bool contains(const key_type &key) const noexcept {
+            return tree_->Find(key) != tree_->end_();
+        }
+
+        //Размещаем новые элементы в контейнер, если такого ключа еще нет
+        template <typename... Args>
+        std::vector<std::pair<iterator, bool>> emplace(Args &&...args) {
+            return tree_->emplace_(std::forward<Args>(args)...);
+        }
 
 
 
