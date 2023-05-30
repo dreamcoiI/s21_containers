@@ -5,8 +5,6 @@
 #include <limits>
 #include <vector>
 
-#include "s21_vector.h"
-
 namespace s21 {
 
 //цвета нашего дерева
@@ -61,6 +59,7 @@ class RBTree {
         clear();
       }
     }
+    return *this;
   }
   //Присваивание переносом
   tree_type &operator=(tree_type &&other) noexcept {
@@ -130,7 +129,7 @@ class RBTree {
     if (this != &other) {
       iterator anotherBegin = other.begin_();
       while (other.size_ > 0) {
-        tree_node *mvgNode = other.begin_();
+        tree_node *mvgNode = anotherBegin.node_;
         ++anotherBegin;
         if (mvgNode->left_ != nullptr)
           mvgNode->left_->parent_ = mvgNode->parent_;
