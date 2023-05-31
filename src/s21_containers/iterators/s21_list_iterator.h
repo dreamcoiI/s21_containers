@@ -1,29 +1,48 @@
-#ifdef S21_CONTAINERS_ITERATORS_S21_LIST_ITERATOR_H
+#ifndef S21_CONTAINERS_ITERATORS_S21_LIST_ITERATOR_H
 #define S21_CONTAINERS_ITERATORS_S21_LIST_ITERATOR_H
 
-#include "../s21_list.h"
+#include "../s21_list_node.h"
+#include <stdexcept>
 
 namespace s21 {
+
+
   template <typename T>
   class ListIterator {
     public:
-      friend class List<T>;
+      friend class list<T>;
 
-      ListIterator(const List<T> &list) {
+      ListIterator() {}
+
+      ListIterator(list<T> list) {
         if (list.begin_ == nullptr) {
           throw std::out_of_range("empty container");
         }
         node_ = list.begin_;
       }
-      
-      ~ListIterator() {
-        delete node_;
+
+      ListIterator(Node<T> *node) {
+        if (node == nullptr) {
+          throw std::out_of_range("empty container");
+        }
+        node_ = node;
+      }    
+
+      ListIterator& operator++() {
+        if (node_->next_ != nullptr) { 
+          node_ = node_->next_;
+        }
+        return *this;
       }
 
-      friend ListIterator& operator++(ListIterator& other);
-      friend ListIterator& operator--(ListIterator& other);
+      ListIterator& operator--() {
+        if (node_->prev_ != nullptr) { 
+          node_ = node_->prev_;
+        }
+        return *this;
+      }
 
-      const T& operator*() const {
+      T& operator*() const {
         if (node_ == nullptr) {
           throw std::out_of_range("node don't excist");
         }
@@ -49,20 +68,6 @@ namespace s21 {
     private:
       Node<T>* node_;
   };
-
-  ListIterator& operator++(ListIterator& other) {
-    if (other.node_->next_ != nullptr) { 
-      other.node_ = other.node_->next_;
-    }
-    return other.node_;
-  }
-
-  ListIterator& operator--(ListIterator& other) {
-    if (other.node_->prev_ != nullptr) { 
-      other.node_ = other.node_->prev_;
-    }
-    return other.node_;
-  }
 
 }
 

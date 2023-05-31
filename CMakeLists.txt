@@ -9,9 +9,7 @@ include_directories(src/s21_containers)
 include_directories(src/s21_containers/iterators)
 
 add_executable(CPP2_s21_containers_2
-        code-samples/main.cpp
-        code-samples/testVector.cpp
-        code-samples/testVector.h
+        src/s21_containers/s21_multiset.h
         src/s21_containers/iterators/s21_list_iterator.cpp
         src/s21_containers/iterators/s21_list_iterator.h
         src/s21_containers/s21_list.cpp
@@ -19,4 +17,5 @@ add_executable(CPP2_s21_containers_2
         src/s21_containers/s21_queue.h
         src/s21_containers/s21_stack.h
         src/s21_containers/s21_vector.h
-        src/s21_containers.h src/s21_containers/s21_array.h src/s21_containers/s21_tree.h src/s21_containers/s21_map.h src/s21_containers/s21_set.h src/tests/vector_test.cc src/tests/test_main.cc src/tests/test_array.cc)
+        src
+        src/s21_containers.h src/s21_containers/s21_array.h src/s21_containers/s21_tree.h src/s21_containers/s21_map.h src/s21_containers/s21_set.h src/tests/vector_test.cc src/tests/test_main.cc src/tests/test_array.cc src/tests/map_test.cc)
