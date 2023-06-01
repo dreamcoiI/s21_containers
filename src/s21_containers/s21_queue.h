@@ -16,13 +16,14 @@ class queue {
 
   queue() = default;
   queue(const queue& other);
+  queue(std::initializer_list<value_type> const& items);
   queue(queue&& other) noexcept;
   queue& operator=(const queue& other);
   queue& operator=(queue&& other) noexcept;
   ~queue();
 
-  const_reference front() const;
-  const_reference back() const;
+  const_reference front();
+  const_reference back();
   bool empty() const;
   size_type size() const;
   void push(const_reference value);
@@ -37,6 +38,9 @@ class queue {
 
 template <typename T>
 queue<T>::queue(const queue& other) : list_{other.list_} {}
+
+template <typename T>
+queue<T>::queue(std::initializer_list<T> const& items) : list_{items} {}
 
 template <typename T>
 queue<T>::queue(queue&& other) noexcept : list_{std::move(other.list_)} {}
@@ -61,12 +65,12 @@ template <typename T>
 queue<T>::~queue() {}
 
 template <typename T>
-typename queue<T>::const_reference queue<T>::front() const {
+const T& queue<T>::front() {
   return list_.front();
 }
 
 template <typename T>
-typename queue<T>::const_reference queue<T>::back() const {
+const T& queue<T>::back() {
   return list_.back();
 }
 

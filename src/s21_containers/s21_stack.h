@@ -15,13 +15,14 @@ class stack {
   using size_type = size_t;
 
   stack() = default;
+  stack(std::initializer_list<T> const& items);
   stack(const stack& other);
   stack(stack&& other) noexcept;
   stack& operator=(const stack& other);
   stack& operator=(stack&& other) noexcept;
   ~stack();
 
-  const_reference top() const;
+  const_reference top();
   bool empty() const;
   size_type size() const;
   void push(const_reference value);
@@ -36,6 +37,9 @@ class stack {
 
 template <typename T>
 stack<T>::stack(const stack& other) : list_{other.list_} {}
+
+template <typename T>
+stack<T>::stack(std::initializer_list<T> const& items) : list_{items} {}
 
 template <typename T>
 stack<T>::stack(stack&& other) noexcept : list_{std::move(other.list_)} {}
@@ -60,8 +64,8 @@ template <typename T>
 stack<T>::~stack() {}
 
 template <typename T>
-typename stack<T>::const_reference stack<T>::top() const {
-  return list_.front();
+typename stack<T>::const_reference stack<T>::top() {
+  return list_.back();
 }
 
 template <typename T>
@@ -76,7 +80,7 @@ typename stack<T>::size_type stack<T>::size() const {
 
 template <typename T>
 void stack<T>::push(const_reference value) {
-  list_.push_front(value);
+  list_.push_back(value);
 }
 
 template <typename T>
@@ -87,7 +91,7 @@ void stack<T>::emplace(Args&&... args) {
 
 template <typename T>
 void stack<T>::pop() {
-  list_.pop_front();
+  list_.pop_back();
 }
 
 template <typename T>
