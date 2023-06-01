@@ -11,7 +11,6 @@
 #include "s21_list_node.h"
 
 namespace s21 {
-
 template <typename T>
 class list {
  public:

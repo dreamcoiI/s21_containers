@@ -1,7 +1,11 @@
+#ifndef S21_CONTAINERS_S21_QUEUE_H
+#define S21_CONTAINERS_S21_QUEUE_H
+
 #include <cstddef>
 
 #include "s21_list.h"
 
+namespace s21 {
 template <typename T>
 class Queue {
  public:
@@ -28,7 +32,7 @@ class Queue {
   void emplace_back(Args&&... args);
 
  private:
-  List<value_type> list_;
+  list<value_type> list_;
 };
 
 template <typename T>
@@ -96,3 +100,5 @@ template <class... Args>
 void Queue<T>::emplace_back(Args&&... args) {
   list_.emplace_back(std::forward<Args>(args)...);
 }
+}  // namespace s21
+#endif  // S21_CONTAINERS_S21_QUEUE_H

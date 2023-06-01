@@ -1,7 +1,11 @@
+#ifndef S21_CONTAINERS_S21_STACK_H
+#define S21_CONTAINERS_S21_STACK_H
+
 #include <cstddef>
 
 #include "s21_list.h"
 
+namespace s21 {
 template <typename T>
 class Stack {
  public:
@@ -27,7 +31,7 @@ class Stack {
   void swap(Stack& other);
 
  private:
-  List<value_type> list_;
+  list<value_type> list_;
 };
 
 template <typename T>
@@ -90,3 +94,5 @@ template <typename T>
 void Stack<T>::swap(Stack& other) {
   list_.swap(other.list_);
 }
+}  // namespace s21
+#endif  // S21_CONTAINERS_S21_STACK_H
