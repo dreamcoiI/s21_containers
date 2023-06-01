@@ -7,19 +7,19 @@
 
 namespace s21 {
 template <typename T>
-class Stack {
+class stack {
  public:
   using value_type = T;
   using reference = T&;
   using const_reference = const T&;
   using size_type = size_t;
 
-  Stack() = default;
-  Stack(const Stack& other);
-  Stack(Stack&& other) noexcept;
-  Stack& operator=(const Stack& other);
-  Stack& operator=(Stack&& other) noexcept;
-  ~Stack();
+  stack() = default;
+  stack(const stack& other);
+  stack(stack&& other) noexcept;
+  stack& operator=(const stack& other);
+  stack& operator=(stack&& other) noexcept;
+  ~stack();
 
   const_reference top() const;
   bool empty() const;
@@ -28,28 +28,28 @@ class Stack {
   template <class... Args>
   void emplace(Args&&... args);
   void pop();
-  void swap(Stack& other);
+  void swap(stack& other);
 
  private:
   list<value_type> list_;
 };
 
 template <typename T>
-Stack<T>::Stack(const Stack& other) : list_{other.list_} {}
+stack<T>::stack(const stack& other) : list_{other.list_} {}
 
 template <typename T>
-Stack<T>::Stack(Stack&& other) noexcept : list_{std::move(other.list_)} {}
+stack<T>::stack(stack&& other) noexcept : list_{std::move(other.list_)} {}
 
 template <typename T>
-Stack<T>& Stack<T>::operator=(const Stack& other) {
+stack<T>& stack<T>::operator=(const stack& other) {
   if (this != &other) {
-    Stack(other).swap(*this);
+    stack(other).swap(*this);
   }
   return *this;
 }
 
 template <typename T>
-Stack<T>& Stack<T>::operator=(Stack&& other) noexcept {
+stack<T>& stack<T>::operator=(stack&& other) noexcept {
   if (this != &other) {
     list_ = std::move(other.list_);
   }
@@ -57,41 +57,41 @@ Stack<T>& Stack<T>::operator=(Stack&& other) noexcept {
 }
 
 template <typename T>
-Stack<T>::~Stack() {}
+stack<T>::~stack() {}
 
 template <typename T>
-typename Stack<T>::const_reference Stack<T>::top() const {
+typename stack<T>::const_reference stack<T>::top() const {
   return list_.front();
 }
 
 template <typename T>
-bool Stack<T>::empty() const {
+bool stack<T>::empty() const {
   return list_.empty();
 }
 
 template <typename T>
-typename Stack<T>::size_type Stack<T>::size() const {
+typename stack<T>::size_type stack<T>::size() const {
   return list_.size();
 }
 
 template <typename T>
-void Stack<T>::push(const_reference value) {
+void stack<T>::push(const_reference value) {
   list_.push_front(value);
 }
 
 template <typename T>
 template <class... Args>
-void Stack<T>::emplace(Args&&... args) {
+void stack<T>::emplace(Args&&... args) {
   list_.emplace_front(std::forward<Args>(args)...);
 }
 
 template <typename T>
-void Stack<T>::pop() {
+void stack<T>::pop() {
   list_.pop_front();
 }
 
 template <typename T>
-void Stack<T>::swap(Stack& other) {
+void stack<T>::swap(stack& other) {
   list_.swap(other.list_);
 }
 }  // namespace s21
