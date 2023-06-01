@@ -1,98 +1,116 @@
+#ifndef S21_CONTAINERS_S21_QUEUE_H_
+#define S21_CONTAINERS_S21_QUEUE_H_
+
 #include <cstddef>
 
 #include "s21_list.h"
+namespace s21 {
+    template<typename T>
+    class queue {
+    public:
+        using value_type = T;
+        using reference = T &;
+        using const_reference = const T &;
+        using size_type = size_t;
 
-template <typename T>
-class Queue {
- public:
-  using value_type = T;
-  using reference = T&;
-  using const_reference = const T&;
-  using size_type = size_t;
+        queue() = default;
 
-  Queue() = default;
-  Queue(const Queue& other);
-  Queue(Queue&& other) noexcept;
-  Queue& operator=(const Queue& other);
-  Queue& operator=(Queue&& other) noexcept;
-  ~Queue();
+        queue(const queue &other);
 
-  const_reference front() const;
-  const_reference back() const;
-  bool empty() const;
-  size_type size() const;
-  void push(const_reference value);
-  void pop();
-  void swap(Queue& other);
-  template <class... Args>
-  void emplace_back(Args&&... args);
+        queue(queue &&other) noexcept;
 
- private:
-  List<value_type> list_;
-};
+        queue &operator=(const queue &other);
 
-template <typename T>
-Queue<T>::Queue(const Queue& other) : list_{other.list_} {}
+        queue &operator=(queue &&other) noexcept;
 
-template <typename T>
-Queue<T>::Queue(Queue&& other) noexcept : list_{std::move(other.list_)} {}
+        ~queue();
 
-template <typename T>
-Queue<T>& Queue<T>::operator=(const Queue& other) {
-  if (this != &other) {
-    Queue(other).swap(*this);
-  }
-  return *this;
-}
+        const_reference front() const;
 
-template <typename T>
-Queue<T>& Queue<T>::operator=(Queue&& other) noexcept {
-  if (this != &other) {
-    list_ = std::move(other.list_);
-  }
-  return *this;
-}
+        const_reference back() const;
 
-template <typename T>
-Queue<T>::~Queue() {}
+        bool empty() const;
 
-template <typename T>
-typename Queue<T>::const_reference Queue<T>::front() const {
-  return list_.front();
-}
+        size_type size() const;
 
-template <typename T>
-typename Queue<T>::const_reference Queue<T>::back() const {
-  return list_.back();
-}
+        void push(const_reference value);
 
-template <typename T>
-bool Queue<T>::empty() const {
-  return list_.empty();
-}
+        void pop();
 
-template <typename T>
-typename Queue<T>::size_type Queue<T>::size() const {
-  return list_.size();
-}
+        void swap(queue &other);
 
-template <typename T>
-void Queue<T>::push(const_reference value) {
-  list_.push_back(value);
-}
+        template<class... Args>
+        void emplace_back(Args &&... args);
 
-template <typename T>
-void Queue<T>::pop() {
-  list_.pop_front();
-}
+    private:
+        s21::list<value_type> list_;
+    };
 
-template <typename T>
-void Queue<T>::swap(Queue& other) {
-  list_.swap(other.list_);
-}
+    template<typename T>
+    queue<T>::queue(const queue &other) : list_{other.list_} {}
 
-template <typename T>
-template <class... Args>
-void Queue<T>::emplace_back(Args&&... args) {
-  list_.emplace_back(std::forward<Args>(args)...);
-}
+    template<typename T>
+    queue<T>::queue(queue &&other) noexcept : list_{std::move(other.list_)} {}
+
+    template<typename T>
+    queue<T> &queue<T>::operator=(const queue &other) {
+        if (this != &other) {
+            queue(other).swap(*this);
+        }
+        return *this;
+    }
+
+    template<typename T>
+    queue<T> &queue<T>::operator=(queue &&other) noexcept {
+        if (this != &other) {
+            list_ = std::move(other.list_);
+        }
+        return *this;
+    }
+
+    template<typename T>
+    queue<T>::~queue() {}
+
+    template<typename T>
+    typename queue<T>::const_reference queue<T>::front() const {
+        return list_.front();
+    }
+
+    template<typename T>
+    typename queue<T>::const_reference queue<T>::back() const {
+        return list_.back();
+    }
+
+    template<typename T>
+    bool queue<T>::empty() const {
+        return list_.empty();
+    }
+
+    template<typename T>
+    typename queue<T>::size_type queue<T>::size() const {
+        return list_.size();
+    }
+
+    template<typename T>
+    void queue<T>::push(const_reference value) {
+        list_.push_back(value);
+    }
+
+    template<typename T>
+    void queue<T>::pop() {
+        list_.pop_front();
+    }
+
+    template<typename T>
+    void queue<T>::swap(queue &other) {
+        list_.swap(other.list_);
+    }
+
+    template<typename T>
+    template<class... Args>
+    void queue<T>::emplace_back(Args &&... args) {
+        list_.emplace_back(std::forward<Args>(args)...);
+    }
+} //namespace
+
+#endif //S21_CONTAINERS_S21_QUEUE_H_
