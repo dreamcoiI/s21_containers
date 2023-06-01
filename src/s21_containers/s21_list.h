@@ -20,7 +20,7 @@ class list {
   using const_reference = const T &;
   using iterator = ListIterator<T>;
   using const_iterator =
-      const iterator;  // typename ListIterator<T>::ConstIterator;
+      const iterator;
   using size_type = size_t;
 
   list() { end_.node_ = new Node(value_type()); }
