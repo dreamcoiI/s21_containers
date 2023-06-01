@@ -18,8 +18,7 @@ class list {
   using reference = T &;
   using const_reference = const T &;
   using iterator = ListIterator<T>;
-  using const_iterator =
-      const iterator;
+  using const_iterator = const iterator;
   using size_type = size_t;
 
   list() { end_.node_ = new Node(value_type()); }

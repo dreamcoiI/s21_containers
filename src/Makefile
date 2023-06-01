@@ -1,8 +1,5 @@
-CC= g++
-CFLAGS= -Wall -Wextra -Werror
-STANDART= -std=c++17
-TESTFLAGS=-lgtest
-TESTFILES= tests/*.cc
+CC = g++ CFLAGS = -Wall - Wextra - Werror STANDART = -std = c++ 17 TESTFLAGS =
+                      -lgtest TESTFILES = tests/*.cc
 
 all: gcov_report
 
