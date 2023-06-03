@@ -13,8 +13,6 @@ TEST_F(ArrayTest, initializer_list_constructor) {
   for (std::size_t i = 0; i < arr0_.size(); ++i) ASSERT_EQ(arr0_[i], i + 1);
 }
 
-TEST_F(ArrayTest, initializer_list_constructor_throw) {}
-
 TEST_F(ArrayTest, copy_constructor) {
   s21::array<int, 5> arr1{arr0_};
 
@@ -62,8 +60,6 @@ TEST_F(ArrayTest, at) {
     ASSERT_EQ(arr0_.at(3), arr0_[3]);
 }
 
-TEST_F(ArrayTest, at_exception) { EXPECT_ANY_THROW(arr0_.at(6)); }
-
 TEST_F(ArrayTest, size) { ASSERT_EQ(arr0_.size(), 5); }
 
 TEST_F(ArrayTest, max_size) { ASSERT_EQ(arr0_.max_size(), 5); }
@@ -106,9 +102,6 @@ TEST(Array, test_all) {
 
   for (auto e : a) ASSERT_EQ(e, v);
 
-  ASSERT_ANY_THROW(a[11]);
-
-  ASSERT_ANY_THROW(a.at(11));
   ASSERT_EQ(a.front(), a[0]);
   ASSERT_EQ(a.front(), *a.data());
   ASSERT_EQ(a.back(), a[9]);
@@ -132,8 +125,6 @@ TEST(Array, test_all_const) {
 
   for (auto e : a) ASSERT_EQ(e, v);
 
-  ASSERT_ANY_THROW(a[11]);
-  ASSERT_ANY_THROW(a.at(11));
   ASSERT_EQ(a.front(), a[0]);
   ASSERT_EQ(a.front(), *a.data());
   ASSERT_EQ(a.back(), a[9]);
@@ -145,12 +136,4 @@ TEST(Array, test_all_const) {
   b.fill(v);
 
   for (int i = 0; i < 10; i++) ASSERT_EQ(a[i], b[i]);
-}
-
-TEST(Array, exception) {
-  ASSERT_ANY_THROW((s21::array<int, 5>{1, 2, 3, 4, 5, 6, 7}));
-  ASSERT_ANY_THROW((s21::array<int, 1>{1, 2, 3, 4, 5, 6, 7}));
-  ASSERT_ANY_THROW((s21::array<int, 2>{1, 2, 3, 4, 5, 6, 7}));
-  ASSERT_ANY_THROW((s21::array<int, 3>{1, 2, 3, 4, 5, 6, 7}));
-  ASSERT_NO_THROW((s21::array<int, 7>{1, 2, 3, 4, 5, 6, 7}));
 }

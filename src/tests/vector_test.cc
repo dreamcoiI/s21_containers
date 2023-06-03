@@ -57,9 +57,6 @@ TEST(Vector, Modifier_Insert) {
   EXPECT_EQ(s21_vector_1.back(), '5');
 }
 
-// TODO добавить инсерт в начало, инсерт в конец, два инсерта по одному
-// итератору
-
 TEST(Vector, Modifier_Erase) {
   s21::vector<int> s21_vector_1 = {'a', 'c', 'd'};
   s21::vector<int> s21_vector_2 = {'a', 'b', 'c', 'd'};

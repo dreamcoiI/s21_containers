@@ -8,7 +8,7 @@ all: gcov_report
 
 test: clean
 	$(CC) $(CFLAGS) $(STANDART) $(TESTFILES) -o test $(TESTFLAGS)
-	./test
+	./test	
 
 gcov_report: clean
 	$(CC) $(CFLAGS) --coverage $(STANDART) $(TESTFILES) -o test $(TESTFLAGS)
