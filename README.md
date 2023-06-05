@@ -136,5 +136,3 @@ Note: the arguments are the already created elements that should be inserted int
 *Tip 1*: notice that each of these methods uses an Args&&... args - Parameter pack construct. This construct allows a variable number of parameters to be passed to a function or method. So, when calling a method defined as `iterator emplace(const_iterator pos, Args&&... args)`, you can write either `emplace(pos, arg1, arg2)` or `emplace(pos, arg1, arg2, arg3)`.
 
 *Tip 2*: remember to test methods for different cases, including boundary ones.
-
-💡 [Tap here](https://forms.yandex.ru/cloud/64181a7dc09c02252de7a4f3/) **to leave your feedback on the project**. Pedago Team really tries to make your educational experience better.
